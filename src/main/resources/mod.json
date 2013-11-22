@@ -5,6 +5,6 @@
 
     "description":"This module receive events published by other Vert.x verticles and send those events to Kafka broker.",
     "licenses": ["The Apache Software License Version 2.0"],
-    "author": "Zanox GmbH",
+    "author": "ZANOX.de AG",
     "homepage": "https://github.com/zanox/mod-kafka"
 }
