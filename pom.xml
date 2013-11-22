@@ -33,7 +33,7 @@
         <vertx.version>2.1M1</vertx.version>
         <kafka.version>0.8.0-beta1</kafka.version>
         <scala.version>2.9.0</scala.version>
-        <sl4j.version>1.7.2</sl4j.version>
+        <slf4j.version>1.7.2</slf4j.version>
         <yammer.metrics.core.version>2.2.0</yammer.metrics.core.version>
         <yammer.metrics.graphite.version>2.2.0</yammer.metrics.graphite.version>
 
@@ -82,11 +82,6 @@
             <version>${scala.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${sl4j.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.yammer.metrics</groupId>
             <artifactId>metrics-core</artifactId>
             <version>${yammer.metrics.core.version}</version>
@@ -95,6 +90,24 @@
             <groupId>com.yammer.metrics</groupId>
             <artifactId>metrics-graphite</artifactId>
             <version>${yammer.metrics.graphite.version}</version>
+        </dependency>
+
+        <!--slf4j-log4j dependencies-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

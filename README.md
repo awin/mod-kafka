@@ -6,7 +6,7 @@ This module allows to receive events published by other Vert.x verticles and sen
 
 License
 =========
-Copyright 2013, Zanox GmbH under Apache License. See `LICENSE`
+Copyright 2013, ZANOX.de AG under Apache License. See `LICENSE`
 
 
 Dependencies
