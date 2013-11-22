@@ -1,0 +1,10 @@
+{
+  // Java verticle
+    "main": "org.vertx.mods.KafkaMessageProcessor",
+    "worker": true,
+
+    "description":"This module receive events published by other Vert.x verticles and send those events to Kafka broker.",
+    "licenses": ["The Apache Software License Version 2.0"],
+    "author": "Zanox GmbH",
+    "homepage": "https://github.com/zanox/mod-kafka"
+}
