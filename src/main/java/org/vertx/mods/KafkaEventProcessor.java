@@ -20,28 +20,35 @@ import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vertx.KafkaProperties;
 import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
 
 import java.util.Properties;
 
+import static org.vertx.mods.internal.KafkaProperties.*;
+
 /**
  * This verticle is responsible for processing messages.
- * It subscribes to specific topic to handle messages published by other verticals and sends messages to Kafka Broker.
+ * It subscribes to Vert.x's specific EventBus address to handle messages published by other verticals
+ * and sends messages to Kafka Broker.
  */
-public class KafkaMessageProcessor extends BusModBase implements Handler<Message<String>> {
+public class KafkaEventProcessor extends BusModBase implements Handler<Message<String>> {
 
     private Producer<String, String> producer;
+    private String topic;
+    private String partition;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaEventProcessor.class);
 
     @Override
     public void start() {
         super.start();
 
-        producer = getProducer();
+        producer = createProducer();
+
+        topic = getOptionalStringConfig(KAFKA_TOPIC, DEFAULT_TOPIC);
+        partition = getOptionalStringConfig(KAFKA_PARTITION, DEFAULT_PARTITION);
 
         // Get the address of EventBus where the message was published
         String address = getMandatoryStringConfig("address");
@@ -60,7 +67,7 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
     public void handle(Message<String> event) {
         LOGGER.debug("Received message '{}' from EventBus." + event.body());
 
-        sendEventToKafka(producer, event);
+        sendMessageToKafka(producer, event);
     }
 
     /**
@@ -68,16 +75,16 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
      *
      * @return  initialized kafka producer
      */
-    private Producer<String, String> getProducer() {
+    private Producer<String, String> createProducer() {
         Properties props = new Properties();
 
-        String brokerList = getOptionalStringConfig(KafkaProperties.BROKER_LIST, KafkaProperties.DEFAULT_BROKER_LIST);
-        String requestAcks = getOptionalStringConfig(KafkaProperties.REQUEST_ACKS, KafkaProperties.DEFAULT_REQUEST_ACKS);
-        String serializer = getOptionalStringConfig(KafkaProperties.SERIALIZER_CLASS, KafkaProperties.DEFAULT_SERIALIZER_CLASS);
+        String brokerList = getOptionalStringConfig(BROKER_LIST, DEFAULT_BROKER_LIST);
+        String requestAcks = getOptionalStringConfig(REQUEST_ACKS, DEFAULT_REQUEST_ACKS);
+        String serializer = getOptionalStringConfig(SERIALIZER_CLASS, DEFAULT_SERIALIZER_CLASS);
 
-        props.put(KafkaProperties.BROKER_LIST, brokerList);
-        props.put(KafkaProperties.SERIALIZER_CLASS, serializer);
-        props.put(KafkaProperties.REQUEST_ACKS, requestAcks);
+        props.put(BROKER_LIST, brokerList);
+        props.put(SERIALIZER_CLASS, serializer);
+        props.put(REQUEST_ACKS, requestAcks);
 
         return new Producer<>(new ProducerConfig(props));
     }
@@ -88,11 +95,8 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
      * @param producer kafka producer provided by the caller
      * @param event    event that should be sent to Kafka Broker
      */
-    private void sendEventToKafka(Producer<String, String> producer, Message<String> event) {
+    private void sendMessageToKafka(Producer<String, String> producer, Message<String> event) {
         LOGGER.debug("Sending kafka message to kafka: " + event.body());
-
-        String topic = getOptionalStringConfig(KafkaProperties.KAFKA_TOPIC, KafkaProperties.DEFAULT_TOPIC);
-        String partition = getOptionalStringConfig(KafkaProperties.KAFKA_PARTITION, KafkaProperties.DEFAULT_PARTITION);
 
         producer.send(new KeyedMessage<>(topic, partition, event.body()));
 

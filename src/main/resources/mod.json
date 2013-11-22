@@ -1,6 +1,6 @@
 {
   // Java verticle
-    "main": "org.vertx.mods.KafkaMessageProcessor",
+    "main": "org.vertx.mods.KafkaEventProcessor",
     "worker": true,
 
     "description":"This module receive events published by other Vert.x verticles and send those events to Kafka broker.",
