@@ -23,7 +23,7 @@ public final class KafkaProperties {
     /* Non-instantiable class */
     private KafkaProperties() {}
 
-    public static final String BROKER_LIST = "broker.list";
+    public static final String BROKER_LIST = "metadata.broker.list";
     public static final String REQUEST_ACKS = "request.required.acks";
     public static final String SERIALIZER_CLASS = "serializer.class";
     public static final String KAFKA_TOPIC = "kafka-topic";
