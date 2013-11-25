@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vertx.mods;
+package com.zanox.mods;
 
+import com.zanox.mods.internal.KafkaProperties;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
 
 import java.util.Properties;
-
-import static org.vertx.mods.internal.KafkaProperties.*;
 
 /**
  * This verticle is responsible for processing messages.
@@ -39,16 +36,14 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<S
     private String topic;
     private String partition;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaEventProcessor.class);
-
     @Override
     public void start() {
         super.start();
 
         producer = createProducer();
 
-        topic = getOptionalStringConfig(KAFKA_TOPIC, DEFAULT_TOPIC);
-        partition = getOptionalStringConfig(KAFKA_PARTITION, DEFAULT_PARTITION);
+        topic = getOptionalStringConfig(KafkaProperties.KAFKA_TOPIC, KafkaProperties.DEFAULT_TOPIC);
+        partition = getOptionalStringConfig(KafkaProperties.KAFKA_PARTITION, KafkaProperties.DEFAULT_PARTITION);
 
         // Get the address of EventBus where the message was published
         String address = getMandatoryStringConfig("address");
@@ -65,7 +60,7 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<S
 
     @Override
     public void handle(Message<String> event) {
-        LOGGER.debug("Received message '{}' from EventBus." + event.body());
+        logger.debug("Received message '{}' from EventBus." + event.body());
 
         sendMessageToKafka(producer, event);
     }
@@ -75,16 +70,16 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<S
      *
      * @return  initialized kafka producer
      */
-    private Producer<String, String> createProducer() {
+    protected Producer<String, String> createProducer() {
         Properties props = new Properties();
 
-        String brokerList = getOptionalStringConfig(BROKER_LIST, DEFAULT_BROKER_LIST);
-        String requestAcks = getOptionalStringConfig(REQUEST_ACKS, DEFAULT_REQUEST_ACKS);
-        String serializer = getOptionalStringConfig(SERIALIZER_CLASS, DEFAULT_SERIALIZER_CLASS);
+        String brokerList = getOptionalStringConfig(KafkaProperties.BROKER_LIST, KafkaProperties.DEFAULT_BROKER_LIST);
+        String requestAcks = getOptionalStringConfig(KafkaProperties.REQUEST_ACKS, KafkaProperties.DEFAULT_REQUEST_ACKS);
+        String serializer = getOptionalStringConfig(KafkaProperties.SERIALIZER_CLASS, KafkaProperties.DEFAULT_SERIALIZER_CLASS);
 
-        props.put(BROKER_LIST, brokerList);
-        props.put(SERIALIZER_CLASS, serializer);
-        props.put(REQUEST_ACKS, requestAcks);
+        props.put(KafkaProperties.BROKER_LIST, brokerList);
+        props.put(KafkaProperties.SERIALIZER_CLASS, serializer);
+        props.put(KafkaProperties.REQUEST_ACKS, requestAcks);
 
         return new Producer<>(new ProducerConfig(props));
     }
@@ -95,11 +90,11 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<S
      * @param producer kafka producer provided by the caller
      * @param event    event that should be sent to Kafka Broker
      */
-    private void sendMessageToKafka(Producer<String, String> producer, Message<String> event) {
-        LOGGER.debug("Sending kafka message to kafka: " + event.body());
+    protected void sendMessageToKafka(Producer<String, String> producer, Message<String> event) {
+        logger.debug("Sending kafka message to kafka: " + event.body());
 
         producer.send(new KeyedMessage<>(topic, partition, event.body()));
 
-        LOGGER.debug("Message '{}' sent to kafka." + event.body());
+        logger.debug("Message '{}' sent to kafka." + event.body());
    }
 }

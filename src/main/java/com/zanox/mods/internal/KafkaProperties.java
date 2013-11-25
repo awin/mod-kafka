@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.vertx.mods.internal;
+package com.zanox.mods.internal;
 
 /**
  * Stores default kafka properties.

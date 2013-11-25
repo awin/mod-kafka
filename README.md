@@ -82,7 +82,7 @@ Example:
         config.putString("request.required.acks", "1");
         config.putString("serializer.class", "kafka.serializer.StringEncoder");
         
-        container.deployModule("org.vertx~mod-kafka~0.0.1-SNAPSHOT", config);
+        container.deployModule("com.zanox~mod-kafka~0.0.1-SNAPSHOT", config);
 
 ```
 
