@@ -14,7 +14,7 @@ Dependencies
 
 This module requires a Kafka server to be available. See http://kafka.apache.org/documentation.html#quickstart for Kafka setup.
 You need to have Zookeeper & Kafka servers running. After you have this module integrated into your application, and message has been sent to Kafka
-using this, you may test the results by creating Kafka consumer in console, which listens to the same topic to which you sent events.
+using this, you may test the results by creating Kafka consumer in console, which listens to the same topic which you specified in your configuration while deploying the module.
 For more information how to create Kafka console consumer see: http://kafka.apache.org/documentation.html#quickstart
 
 
@@ -71,6 +71,7 @@ Make sure you have Kafka server running locally on port 9092 (see http://kafka.a
 2. bin/zookeeper-server-start.sh config/zookeeper.properties
 3. bin/kafka-server-start.sh config/server.properties
 
+Then deploy mod-kafka module in your application like specified below:
 Example:
 
 ```java
