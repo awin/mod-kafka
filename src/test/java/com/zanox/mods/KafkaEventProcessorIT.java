@@ -35,6 +35,14 @@ import java.nio.ByteBuffer;
 
 import static org.junit.Assert.*;
 
+/**
+ * Tests mod-kafka module.
+ * This test sends an event to Vert.x EventBus, then registers a handler to handle that event
+ * and send it to Kafka broker, by creating Kafka Producer.
+ *
+ * This test uses Kafka configuration for localhost. So before running the test make sure you have
+ * Zookeeper and Kafka servers started on localhost.
+ */
 public class KafkaEventProcessorIT extends TestVerticle {
 
     private static final String MODULE_NAME = "com.zanox~mod-kafka~0.0.1-SNAPSHOT";
