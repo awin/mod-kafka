@@ -15,7 +15,6 @@
  */
 package com.zanox.mods;
 
-import com.zanox.mods.internal.KafkaProperties;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
@@ -25,6 +24,8 @@ import org.vertx.java.core.eventbus.Message;
 
 import java.util.Properties;
 
+import static com.zanox.mods.internal.KafkaProperties.*;
+
 /**
  * This verticle is responsible for processing messages.
  * It subscribes to Vert.x's specific EventBus address to handle messages published by other verticals
@@ -33,8 +34,8 @@ import java.util.Properties;
 public class KafkaEventProcessor extends BusModBase implements Handler<Message<String>> {
 
     private Producer<String, String> producer;
-    private String topic;
-    private String partition;
+    private String topic = DEFAULT_TOPIC;
+    private String partition = DEFAULT_PARTITION;
 
     @Override
     public void start() {
@@ -42,8 +43,8 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<S
 
         producer = createProducer();
 
-        topic = getOptionalStringConfig(KafkaProperties.KAFKA_TOPIC, KafkaProperties.DEFAULT_TOPIC);
-        partition = getOptionalStringConfig(KafkaProperties.KAFKA_PARTITION, KafkaProperties.DEFAULT_PARTITION);
+        topic = getOptionalStringConfig(KAFKA_TOPIC, DEFAULT_TOPIC);
+        partition = getOptionalStringConfig(KAFKA_PARTITION, DEFAULT_PARTITION);
 
         // Get the address of EventBus where the message was published
         String address = getMandatoryStringConfig("address");
@@ -68,18 +69,18 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<S
     /**
      * Returns an initialized instance of kafka producer.
      *
-     * @return  initialized kafka producer
+     * @return initialized kafka producer
      */
     protected Producer<String, String> createProducer() {
         Properties props = new Properties();
 
-        String brokerList = getOptionalStringConfig(KafkaProperties.BROKER_LIST, KafkaProperties.DEFAULT_BROKER_LIST);
-        String requestAcks = getOptionalStringConfig(KafkaProperties.REQUEST_ACKS, KafkaProperties.DEFAULT_REQUEST_ACKS);
-        String serializer = getOptionalStringConfig(KafkaProperties.SERIALIZER_CLASS, KafkaProperties.DEFAULT_SERIALIZER_CLASS);
+        String brokerList = getOptionalStringConfig(BROKER_LIST, DEFAULT_BROKER_LIST);
+        String requestAcks = getOptionalStringConfig(REQUEST_ACKS, DEFAULT_REQUEST_ACKS);
+        String serializer = getOptionalStringConfig(SERIALIZER_CLASS, DEFAULT_SERIALIZER_CLASS);
 
-        props.put(KafkaProperties.BROKER_LIST, brokerList);
-        props.put(KafkaProperties.SERIALIZER_CLASS, serializer);
-        props.put(KafkaProperties.REQUEST_ACKS, requestAcks);
+        props.put(BROKER_LIST, brokerList);
+        props.put(SERIALIZER_CLASS, serializer);
+        props.put(REQUEST_ACKS, requestAcks);
 
         return new Producer<>(new ProducerConfig(props));
     }
@@ -96,5 +97,5 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<S
         producer.send(new KeyedMessage<>(topic, partition, event.body()));
 
         logger.info("Message '{}' sent to kafka." + event.body());
-   }
+    }
 }

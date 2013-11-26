@@ -100,20 +100,6 @@
             <artifactId>metrics-graphite</artifactId>
             <version>${version.yammer.metrics.graphite}</version>
         </dependency>
-
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${version.junit}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>testtools</artifactId>
-            <version>${version.vertx.testtools}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
 
