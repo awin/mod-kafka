@@ -60,7 +60,7 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<S
 
     @Override
     public void handle(Message<String> event) {
-        logger.debug("Received message '{}' from EventBus." + event.body());
+        logger.info("Received message '{}' from EventBus." + event.body());
 
         sendMessageToKafka(producer, event);
     }
@@ -91,10 +91,10 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<S
      * @param event    event that should be sent to Kafka Broker
      */
     protected void sendMessageToKafka(Producer<String, String> producer, Message<String> event) {
-        logger.debug("Sending kafka message to kafka: " + event.body());
+        logger.info("Sending kafka message to kafka: " + event.body());
 
         producer.send(new KeyedMessage<>(topic, partition, event.body()));
 
-        logger.debug("Message '{}' sent to kafka." + event.body());
+        logger.info("Message '{}' sent to kafka." + event.body());
    }
 }
