@@ -73,7 +73,7 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<J
      *
      * @return initialized kafka producer
      */
-    protected Producer<String, String> createProducer() {
+    private Producer<String, String> createProducer() {
         Properties props = new Properties();
 
         String brokerList = getOptionalStringConfig(BROKER_LIST, DEFAULT_BROKER_LIST);
