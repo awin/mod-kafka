@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zanox.mods;
+package com.zanox.vertx.mods;
 
 import kafka.common.FailedToSendMessageException;
 import kafka.javaapi.producer.Producer;
@@ -26,7 +26,7 @@ import org.vertx.java.core.json.JsonObject;
 
 import java.util.Properties;
 
-import static com.zanox.mods.internal.KafkaProperties.*;
+import static com.zanox.vertx.mods.internal.KafkaProperties.*;
 
 /**
  * This verticle is responsible for processing messages.
@@ -84,7 +84,7 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<J
         props.put(SERIALIZER_CLASS, serializer);
         props.put(REQUEST_ACKS, requestAcks);
 
-        return new Producer<>(new ProducerConfig(props));
+        return new Producer<String, String>(new ProducerConfig(props));
     }
 
     /**
@@ -97,7 +97,7 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<J
         logger.info("Sending kafka message to kafka: " + event.body());
 
         try {
-            producer.send(new KeyedMessage<>(getTopic(), getPartition(), event.body().getString("content")));
+            producer.send(new KeyedMessage<String, String>(getTopic(), getPartition(), event.body().getString("content")));
             sendOK(event);
             logger.info("Message '{}' sent to kafka." + event.body());
         } catch (FailedToSendMessageException ex) {
