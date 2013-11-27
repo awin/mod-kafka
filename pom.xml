@@ -11,7 +11,7 @@
 
     <name>Kafka module for Vert.x</name>
     <description>Kafka module for Vert.x framework</description>
-    <url>??</url>
+    <url>https://github.com/zanox/mod-kafka</url>
 
     <licenses>
         <license>
