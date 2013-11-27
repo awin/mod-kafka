@@ -15,12 +15,14 @@
  */
 package com.zanox.mods;
 
+import kafka.common.FailedToSendMessageException;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
 import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
+import org.vertx.java.core.json.JsonObject;
 
 import java.util.Properties;
 
@@ -31,11 +33,11 @@ import static com.zanox.mods.internal.KafkaProperties.*;
  * It subscribes to Vert.x's specific EventBus address to handle messages published by other verticals
  * and sends messages to Kafka Broker.
  */
-public class KafkaEventProcessor extends BusModBase implements Handler<Message<String>> {
+public class KafkaEventProcessor extends BusModBase implements Handler<Message<JsonObject>> {
 
     private Producer<String, String> producer;
-    private String topic = DEFAULT_TOPIC;
-    private String partition = DEFAULT_PARTITION;
+    private String topic;
+    private String partition;
 
     @Override
     public void start() {
@@ -60,7 +62,7 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<S
     }
 
     @Override
-    public void handle(Message<String> event) {
+    public void handle(Message<JsonObject> event) {
         logger.info("Received message '{}' from EventBus." + event.body());
 
         sendMessageToKafka(producer, event);
@@ -91,11 +93,23 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<S
      * @param producer kafka producer provided by the caller
      * @param event    event that should be sent to Kafka Broker
      */
-    protected void sendMessageToKafka(Producer<String, String> producer, Message<String> event) {
+    protected void sendMessageToKafka(Producer<String, String> producer, Message<JsonObject> event) {
         logger.info("Sending kafka message to kafka: " + event.body());
 
-        producer.send(new KeyedMessage<>(topic, partition, event.body()));
+        try {
+            producer.send(new KeyedMessage<>(getTopic(), getPartition(), event.body().getString("content")));
+            sendOK(event);
+            logger.info("Message '{}' sent to kafka." + event.body());
+        } catch (FailedToSendMessageException ex) {
+            sendError(event, "Failed to send message to Kafka broker...", ex);
+        }
+    }
 
-        logger.info("Message '{}' sent to kafka." + event.body());
+    public String getTopic() {
+        return topic;
+    }
+
+    public String getPartition() {
+        return partition;
     }
 }
