@@ -13,38 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zanox.mods;
+package com.zanox.vertx.mods;
 
-import com.zanox.mods.internal.KafkaProperties;
-import kafka.common.FailedToSendMessageException;
+import com.zanox.vertx.mods.internal.KafkaProperties;
 import org.junit.Test;
 import org.vertx.java.core.AsyncResult;
 import org.vertx.java.core.AsyncResultHandler;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.testtools.TestVerticle;
+import org.vertx.testtools.VertxAssert;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.vertx.testtools.VertxAssert.assertEquals;
 import static org.vertx.testtools.VertxAssert.testComplete;
 
 /**
- * Tests mod-kafka module specifying correct configuration with all required parameters.
- *
- * This test sends an event to Vert.x EventBus, then registers a handler to handle that event
- * and send it to Kafka broker, by creating Kafka Producer. It checks that the flow works correctly
- * until the point, where message is sent to Kafka.
+ * Tests mod-kafka module specifying incorrect configuration with missing required parameter.
+ * Then verifies that deployment of module fails with a message, that missing parameter should be specified.
  */
-public class KafkaModuleDeployWithCorrectConfigIT extends TestVerticle {
-
-    private static final String ADDRESS = "default-address";
-    private static final String MESSAGE = "Test message!";
+public class KafkaModuleDeployWithIncorrectConfigIT extends TestVerticle {
 
     @Override
     public void start() {
+        VertxAssert.initialize(vertx);
 
         JsonObject config = new JsonObject();
-        config.putString("address", ADDRESS);
+        // Do not put required config param when deploying the module - config.putString("address", ADDRESS);
         config.putString("metadata.broker.list", KafkaProperties.DEFAULT_BROKER_LIST);
         config.putString("kafka-topic", KafkaProperties.DEFAULT_TOPIC);
         config.putString("kafka-partition", KafkaProperties.DEFAULT_PARTITION);
@@ -54,26 +48,16 @@ public class KafkaModuleDeployWithCorrectConfigIT extends TestVerticle {
         container.deployModule(System.getProperty("vertx.modulename"), config, new AsyncResultHandler<String>() {
             @Override
             public void handle(AsyncResult<String> asyncResult) {
-                assertTrue(asyncResult.succeeded());
-                assertNotNull("DeploymentID should not be null", asyncResult.result());
-                KafkaModuleDeployWithCorrectConfigIT.super.start();
+
+                assertTrue(asyncResult.failed());
+                assertEquals("address must be specified in config for busmod", asyncResult.cause().getMessage());
+                testComplete();
             }
         });
     }
 
-
-    @Test(expected = FailedToSendMessageException.class)
+    @Test
     public void sendMessage() throws Exception {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.putString("content", MESSAGE);
-
-        Handler<Message<JsonObject>> replyHandler = new Handler<Message<JsonObject>>() {
-            public void handle(Message<JsonObject> message) {
-                assertEquals("error", message.body().getString("status"));
-                assertTrue(message.body().getString("message").equals("Failed to send message to Kafka broker..."));
-                testComplete();
-            }
-        };
-        vertx.eventBus().send(ADDRESS, jsonObject, replyHandler);
+        // The test should fail in starting the deployment
     }
 }

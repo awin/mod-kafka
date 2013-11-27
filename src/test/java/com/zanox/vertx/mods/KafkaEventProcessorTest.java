@@ -1,7 +1,7 @@
-package com.zanox.mods;
+package com.zanox.vertx.mods;
 
 
-import com.zanox.mods.internal.KafkaProperties;
+import com.zanox.vertx.mods.internal.KafkaProperties;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import org.junit.Test;
