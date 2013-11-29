@@ -27,6 +27,7 @@ import org.vertx.java.core.json.JsonObject;
 import java.util.Properties;
 
 import static com.zanox.vertx.mods.internal.KafkaProperties.*;
+import static com.zanox.vertx.mods.internal.EventProperties.*;
 
 /**
  * This verticle is responsible for processing messages.
@@ -96,13 +97,21 @@ public class KafkaEventProcessor extends BusModBase implements Handler<Message<J
     protected void sendMessageToKafka(Producer<String, String> producer, Message<JsonObject> event) {
         logger.info("Sending kafka message to kafka: " + event.body());
 
+        if(!isValid(event.body().getString(CONTENT))) {
+            logger.error("Invalid message provided. Message not sent to kafka...");
+            return;
+        }
+
         try {
-            producer.send(new KeyedMessage<String, String>(getTopic(), getPartition(), event.body().getString("content")));
+            producer.send(new KeyedMessage<String, String>(getTopic(), getPartition(), event.body().getString(CONTENT)));
             sendOK(event);
             logger.info("Message '{}' sent to kafka." + event.body());
         } catch (FailedToSendMessageException ex) {
             sendError(event, "Failed to send message to Kafka broker...", ex);
         }
+    }
+    private boolean isValid(String str) {
+        return str != null && !str.isEmpty();
     }
 
     public String getTopic() {
