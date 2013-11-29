@@ -6,7 +6,8 @@ This module allows to receive events published by other Vert.x verticles and sen
 
 License
 =========
-Copyright 2013, ZANOX.de AG under Apache License. See `LICENSE`
+Copyright 2013, ZANOX AG under Apache License. See `LICENSE`
+Author: Mariam Hakobyan
 
 
 Dependencies
@@ -87,13 +88,27 @@ Example:
 
 ```
 
-After sending messages from your application, you can verify that you receive them in Kafka server by creating consumer via console:
+After sending messages from your application in the following format:
+
+JsonObject jsonObject = new JsonObject();
+jsonObject.putString("content", "your message goes here");
+
+you can verify that you receive them in Kafka server by creating consumer via console:
 
 1. cd kafka-[version]
 2. bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning
 
 Now you will see the messages being consumed.
 
+
+Contributing
+------------
+1. Fork the repository on Github
+2. Create a named feature branch
+3. Develop your changes in a branch
+4. Write tests for your change (if applicable)
+5. Ensure all the tests are passing
+6. Submit a Pull Request using Github
 
 
 
