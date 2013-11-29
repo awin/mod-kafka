@@ -4,12 +4,6 @@ Kafka
 This module allows to receive events published by other Vert.x verticles and send those events to Kafka broker.
 
 
-License
-=========
-Copyright 2013, ZANOX AG under Apache License. See `LICENSE`
-Author: Mariam Hakobyan
-
-
 Dependencies
 ==========
 
@@ -89,10 +83,10 @@ Example:
 ```
 
 After sending messages from your application in the following format:
-
+```java
 JsonObject jsonObject = new JsonObject();
 jsonObject.putString("content", "your message goes here");
-
+```
 you can verify that you receive them in Kafka server by creating consumer via console:
 
 1. cd kafka-[version]
@@ -100,9 +94,14 @@ you can verify that you receive them in Kafka server by creating consumer via co
 
 Now you will see the messages being consumed.
 
+License
+=========
+Copyright 2013, ZANOX AG under Apache License. See `LICENSE`
+
+Author: Mariam Hakobyan
 
 Contributing
-------------
+============
 1. Fork the repository on Github
 2. Create a named feature branch
 3. Develop your changes in a branch
