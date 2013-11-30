@@ -6,7 +6,7 @@
 
     <groupId>com.zanox.vertx</groupId>
     <artifactId>mod-kafka</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Kafka module for Vert.x</name>
@@ -57,6 +57,8 @@
         <!-- The directory where the module will be assembled - you can override this on the command line
         with -Dmods.directory=mydir -->
         <mods.directory>target/mods</mods.directory>
+
+        <skipSigning>true</skipSigning>
 
         <!--Dependency versions-->
         <version.vertx>2.1M1</version.vertx>
@@ -278,11 +280,7 @@
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
-    </build>
 
-    <reporting>
-        <plugins>
             <!-- Generating Javadoc -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -292,7 +290,49 @@
                     <excludePackageNames>*.support</excludePackageNames>
                 </configuration>
             </plugin>
+
+            <!-- GPG Signing during verify phase -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipSigning}</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Releasing -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.4.2</version>
+            </plugin>
         </plugins>
-    </reporting>
-    
+    </build>
+
+    <profiles>
+        <profile>
+            <id>develop</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+
+        <profile>
+            <id>release</id>
+            <properties>
+                <skipSigning>false</skipSigning>
+            </properties>
+        </profile>
+    </profiles>
+
 </project>
