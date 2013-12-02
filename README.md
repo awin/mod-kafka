@@ -1,7 +1,7 @@
 Kafka
 =========
 
-This module allows to receive events published by other Vert.x verticles and send those events to Kafka broker.
+Kafka module allows to receive events published by other Vert.x verticles and send those events to Kafka broker.
 
 
 Dependencies
