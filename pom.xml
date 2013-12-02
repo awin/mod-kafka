@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.zanox.vertx</groupId>
@@ -19,12 +20,12 @@
         </license>
     </licenses>
 
-    <scm>
-        <connection>scm:git:git@github.com:zanox/mod-kafka.git</connection>
-        <developerConnection>scm:git:git@github.com:zanox/mod-kafka.git</developerConnection>
-        <url>git@github.com:zanox/mod-kafka.git</url>
-      <tag>HEAD</tag>
-  </scm>
+    <!--<scm>-->
+        <!--<connection>scm:git:git@github.com:zanox/mod-kafka.git</connection>-->
+        <!--<developerConnection>scm:git:git@github.com:zanox/mod-kafka.git</developerConnection>-->
+        <!--<url>git@github.com:zanox/mod-kafka.git</url>-->
+        <!--<tag>HEAD</tag>-->
+    <!--</scm>-->
 
     <developers>
         <developer>
@@ -32,11 +33,11 @@
         </developer>
     </developers>
 
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
+    <!--<parent>-->
+        <!--<groupId>org.sonatype.oss</groupId>-->
+        <!--<artifactId>oss-parent</artifactId>-->
+        <!--<version>7</version>-->
+    <!--</parent>-->
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -75,6 +76,7 @@
         <version.maven.resources.plugin>2.6</version.maven.resources.plugin>
         <version.maven.vertx.plugin>2.0.1-final</version.maven.vertx.plugin>
         <version.maven.surefire.plugin>2.16</version.maven.surefire.plugin>
+        <version.maven.failsafe.plugin>2.6</version.maven.failsafe.plugin>
         <version.maven.javadoc.plugin>2.9.1</version.maven.javadoc.plugin>
         <version.maven.source.plugin>2.2.1</version.maven.source.plugin>
         <version.maven.dependency.plugin>2.7</version.maven.dependency.plugin>
@@ -247,21 +249,16 @@
                         <exclude>**/*IT.java</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${version.maven.failsafe.plugin}</version>
                 <executions>
                     <execution>
-                        <id>integration-test</id>
                         <goals>
-                            <goal>test</goal>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
                         </goals>
-                        <phase>integration-test</phase>
-                        <configuration>
-                            <excludes>
-                                <exclude>none</exclude>
-                            </excludes>
-                            <includes>
-                                <include>**/*IT.java</include>
-                            </includes>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
