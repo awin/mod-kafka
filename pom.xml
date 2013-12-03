@@ -82,6 +82,7 @@
         <version.maven.dependency.plugin>2.7</version.maven.dependency.plugin>
         <version.maven.gpg.plugin>1.4</version.maven.gpg.plugin>
         <version.maven.release.plugin>2.4.2</version.maven.release.plugin>
+        <version.maven.assembly.plugin>2.3</version.maven.assembly.plugin>
     </properties>
 
     <dependencies>
@@ -225,6 +226,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>${version.maven.assembly.plugin}</version>
                 <configuration>
                     <descriptors>
                         <descriptor>src/main/assembly/mod.xml</descriptor>
