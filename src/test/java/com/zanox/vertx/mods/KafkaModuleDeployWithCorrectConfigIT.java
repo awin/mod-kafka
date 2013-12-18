@@ -15,7 +15,9 @@
  */
 package com.zanox.vertx.mods;
 
+import com.zanox.vertx.mods.internal.EventProperties;
 import com.zanox.vertx.mods.internal.KafkaProperties;
+import com.zanox.vertx.mods.internal.MessageSerializerType;
 import kafka.common.FailedToSendMessageException;
 import org.junit.Test;
 import org.vertx.java.core.AsyncResult;
@@ -49,7 +51,7 @@ public class KafkaModuleDeployWithCorrectConfigIT extends TestVerticle {
         config.putString("kafka-topic", KafkaProperties.DEFAULT_TOPIC);
         config.putString("kafka-partition", KafkaProperties.DEFAULT_PARTITION);
         config.putString("request.required.acks", KafkaProperties.DEFAULT_REQUEST_ACKS);
-        config.putString("serializer.class", KafkaProperties.DEFAULT_SERIALIZER_CLASS);
+        config.putString("serializer.class", MessageSerializerType.BYTE_SERIALIZER.toString());
 
         container.deployModule(System.getProperty("vertx.modulename"), config, new AsyncResultHandler<String>() {
             @Override
@@ -65,7 +67,7 @@ public class KafkaModuleDeployWithCorrectConfigIT extends TestVerticle {
     @Test(expected = FailedToSendMessageException.class)
     public void sendMessage() throws Exception {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.putString("content", MESSAGE);
+        jsonObject.putString(EventProperties.PAYLOAD, MESSAGE);
 
         Handler<Message<JsonObject>> replyHandler = new Handler<Message<JsonObject>>() {
             public void handle(Message<JsonObject> message) {

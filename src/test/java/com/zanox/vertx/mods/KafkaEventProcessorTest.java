@@ -17,6 +17,7 @@ package com.zanox.vertx.mods;
 
 
 import com.zanox.vertx.mods.internal.KafkaProperties;
+import com.zanox.vertx.mods.internal.MessageSerializerType;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import org.junit.Test;
@@ -45,22 +46,23 @@ public class KafkaEventProcessorTest {
     private Message<JsonObject> event;
 
     @InjectMocks
-    private KafkaEventProcessor kafkaEventProcessor;
+    private KafkaMessageProcessor kafkaMessageProcessor;
 
 
     @Test
     public void sendMessageToKafka() {
-        KafkaEventProcessor kafkaEventProcessorSpy = spy(kafkaEventProcessor);
+        KafkaMessageProcessor kafkaMessageProcessorSpy = spy(kafkaMessageProcessor);
 
-        when(kafkaEventProcessorSpy.getTopic()).thenReturn("default-topic");
-        when(kafkaEventProcessorSpy.getPartition()).thenReturn("default-partition");
+        when(kafkaMessageProcessorSpy.getTopic()).thenReturn("default-topic");
+        when(kafkaMessageProcessorSpy.getPartition()).thenReturn("default-partition");
+        when(kafkaMessageProcessorSpy.getSerializerType()).thenReturn(MessageSerializerType.STRING_SERIALIZER);
 
         JsonObject jsonObjectMock = mock(JsonObject.class);
 
         when(event.body()).thenReturn(jsonObjectMock);
         when(jsonObjectMock.getString(anyString())).thenReturn("test");
 
-        kafkaEventProcessorSpy.sendMessageToKafka(producer, event);
+        kafkaMessageProcessorSpy.sendMessageToKafka(producer, event);
 
         verify(producer, times(1)).send(any(KeyedMessage.class));
     }
@@ -68,18 +70,18 @@ public class KafkaEventProcessorTest {
     @Test
     public void handle() {
 
-       KafkaEventProcessor kafkaEventProcessorSpy = spy(kafkaEventProcessor);
+       KafkaMessageProcessor kafkaMessageProcessorSpy = spy(kafkaMessageProcessor);
 
-        when(kafkaEventProcessorSpy.getTopic()).thenReturn(KafkaProperties.DEFAULT_TOPIC);
-        when(kafkaEventProcessorSpy.getPartition()).thenReturn(KafkaProperties.DEFAULT_PARTITION);
+        when(kafkaMessageProcessorSpy.getTopic()).thenReturn(KafkaProperties.DEFAULT_TOPIC);
+        when(kafkaMessageProcessorSpy.getPartition()).thenReturn(KafkaProperties.DEFAULT_PARTITION);
 
         JsonObject jsonObjectMock = mock(JsonObject.class);
 
         when(event.body()).thenReturn(jsonObjectMock);
         when(jsonObjectMock.getString(anyString())).thenReturn("test");
 
-        kafkaEventProcessorSpy.handle(event);
+        kafkaMessageProcessorSpy.handle(event);
 
-        verify(kafkaEventProcessorSpy).sendMessageToKafka(producer, event);
+        verify(kafkaMessageProcessorSpy).sendMessageToKafka(producer, event);
     }
 }
