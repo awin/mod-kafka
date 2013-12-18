@@ -44,7 +44,7 @@ public class KafkaModuleDeployWithIncorrectConfigIT extends TestVerticle {
         config.putString("kafka-topic", KafkaProperties.DEFAULT_TOPIC);
         config.putString("kafka-partition", KafkaProperties.DEFAULT_PARTITION);
         config.putString("request.required.acks", KafkaProperties.DEFAULT_REQUEST_ACKS);
-        config.putString("serializer.class", MessageSerializerType.STRING_SERIALIZER.toString());
+        config.putString("serializer.class", MessageSerializerType.STRING_SERIALIZER.getValue());
 
         container.deployModule(System.getProperty("vertx.modulename"), config, new AsyncResultHandler<String>() {
             @Override

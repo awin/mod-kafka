@@ -19,14 +19,11 @@ import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import org.vertx.java.core.json.JsonObject;
 
-import java.nio.ByteBuffer;
-
 import static com.zanox.vertx.mods.internal.EventProperties.PAYLOAD;
 
 /**
  * This message handler is responsible for sending byte messages to kafka.
  *
- * @author Mariam Hakobyan
  * @see MessageHandler
  */
 public class ByteMessageHandler extends MessageHandler {
@@ -36,9 +33,9 @@ public class ByteMessageHandler extends MessageHandler {
      */
     @Override
     public void send(Producer producer, String topic, String partition, JsonObject message) {
-        producer.send(new KeyedMessage<String, ByteBuffer>(
+        producer.send(new KeyedMessage<String, byte[]>(
                 topic,
                 partition,
-                ByteBuffer.wrap(message.getBinary(PAYLOAD))));
+                message.getBinary(PAYLOAD)));
     }
 }

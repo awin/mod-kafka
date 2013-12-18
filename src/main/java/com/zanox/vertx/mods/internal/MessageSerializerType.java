@@ -17,8 +17,6 @@ package com.zanox.vertx.mods.internal;
 
 /**
  * Represents possible message types that can be sent to kafka.
- *
- * @author Mariam Hakobyan
  */
 public enum MessageSerializerType {
 

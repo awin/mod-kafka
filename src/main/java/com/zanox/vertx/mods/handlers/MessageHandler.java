@@ -21,8 +21,6 @@ import org.vertx.java.core.json.JsonObject;
 /**
  * This abstract class defines abstract method to send given messages to kafka.
  * It can have multiple implementations, depending on which type of messages should be sent.
- *
- * @author Mariam Hakobyan
  */
 public abstract class MessageHandler {
 

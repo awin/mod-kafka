@@ -25,7 +25,6 @@ import java.util.Properties;
 /**
  * This factory class creates different types of kafka producer instances, based on given message type.
  *
- * @author Mariam Hakobyan
  * @see MessageSerializerType
  */
 public class KafkaProducerFactory {

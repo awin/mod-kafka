@@ -27,7 +27,6 @@ import com.zanox.vertx.mods.internal.MessageSerializerType;
  * {@link ByteMessageHandler}
  * {@link StringMessageHandler}
  *
- * @author Mariam Hakobyan
  * @see MessageSerializerType
  */
 public class MessageHandlerFactory {

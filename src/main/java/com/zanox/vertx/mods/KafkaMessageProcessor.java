@@ -84,7 +84,7 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
         final String requestAcks = getOptionalStringConfig(REQUEST_ACKS, DEFAULT_REQUEST_ACKS);
 
         props.put(BROKER_LIST, brokerList);
-        props.put(SERIALIZER_CLASS, serializerType);
+        props.put(SERIALIZER_CLASS, serializerType.getValue());
         props.put(REQUEST_ACKS, requestAcks);
 
         return KafkaProducerFactory.createProducer(serializerType, props);
@@ -109,7 +109,7 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
             messageHandler.send(producer, getTopic(), getPartition(), event.body());
 
             sendOK(event);
-            logger.info("Message '{}' sent to kafka." + event.body());
+            logger.info("Message '{}' sent to kafka." + event.body().getString(PAYLOAD));
         } catch (FailedToSendMessageException ex) {
             sendError(event, "Failed to send message to Kafka broker...", ex);
         }

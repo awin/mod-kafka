@@ -24,7 +24,6 @@ import static com.zanox.vertx.mods.internal.EventProperties.PAYLOAD;
 /**
  * This message handler is responsible for sending string messages to kafka.
  *
- * @author Mariam Hakobyan
  * @see MessageHandler
  */
 public class StringMessageHandler extends MessageHandler {
