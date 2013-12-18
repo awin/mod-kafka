@@ -17,7 +17,7 @@ import static org.vertx.testtools.VertxAssert.testComplete;
 
 
 /**
- * Tests mod-kafka module with String serializer configuration.
+ * Tests mod-kafka module with byte array serializer configuration.
  */
 public class ByteArraySerializerIT extends TestVerticle {
 
