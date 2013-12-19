@@ -35,7 +35,7 @@ public class KafkaProducerFactory {
      * @param properties        properties to be used to send a message
      * @return                  created kafka producer
      */
-    public static Producer createProducer(MessageSerializerType serializerType, Properties properties) {
+    public Producer createProducer(MessageSerializerType serializerType, Properties properties) {
         Producer producer;
 
         switch (serializerType) {

@@ -41,6 +41,15 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
     private String partition;
     private MessageSerializerType serializerType;
 
+    private MessageHandlerFactory messageHandlerFactory;
+    private KafkaProducerFactory kafkaProducerFactory;
+
+
+    public KafkaMessageProcessor() {
+        messageHandlerFactory = new MessageHandlerFactory();
+        kafkaProducerFactory = new KafkaProducerFactory();
+    }
+
     @Override
     public void start() {
         super.start();
@@ -88,7 +97,7 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
         props.put(REQUEST_ACKS, requestAcks);
         props.put(KEY_SERIALIZER_CLASS, DEFAULT_KEY_SERIALIZER_CLASS);     // always use String serializer for the key
 
-        return KafkaProducerFactory.createProducer(serializerType, props);
+        return kafkaProducerFactory.createProducer(serializerType, props);
     }
 
     /**
@@ -106,7 +115,7 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
         }
 
         try {
-            final MessageHandler messageHandler = MessageHandlerFactory.createMessageHandler(serializerType);
+            final MessageHandler messageHandler = messageHandlerFactory.createMessageHandler(serializerType);
             messageHandler.send(producer, getTopic(), getPartition(), event.body());
 
             sendOK(event);

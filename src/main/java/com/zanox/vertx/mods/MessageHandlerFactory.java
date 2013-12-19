@@ -38,7 +38,7 @@ public class MessageHandlerFactory {
      * @param serializerType    message serializer type
      * @return                  created message handler
      */
-    public static MessageHandler createMessageHandler(MessageSerializerType serializerType) {
+    public MessageHandler createMessageHandler(MessageSerializerType serializerType) {
         final MessageHandler messageHandler;
 
         switch (serializerType) {
