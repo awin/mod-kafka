@@ -86,6 +86,7 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
         props.put(BROKER_LIST, brokerList);
         props.put(SERIALIZER_CLASS, serializerType.getValue());
         props.put(REQUEST_ACKS, requestAcks);
+        props.put(KEY_SERIALIZER_CLASS, DEFAULT_KEY_SERIALIZER_CLASS);     // always use String serializer for the key
 
         return KafkaProducerFactory.createProducer(serializerType, props);
     }

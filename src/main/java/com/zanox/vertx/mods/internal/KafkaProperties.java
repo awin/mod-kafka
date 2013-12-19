@@ -26,6 +26,7 @@ public final class KafkaProperties {
     public static final String BROKER_LIST = "metadata.broker.list";
     public static final String REQUEST_ACKS = "request.required.acks";
     public static final String SERIALIZER_CLASS = "serializer.class";
+    public static final String KEY_SERIALIZER_CLASS = "key.serializer.class";
     public static final String KAFKA_TOPIC = "kafka-topic";
     public static final String KAFKA_PARTITION = "kafka-partition";
 
@@ -34,4 +35,5 @@ public final class KafkaProperties {
     public static final String DEFAULT_PARTITION = "default-partition";
     public static final String DEFAULT_BROKER_LIST = "localhost:9092";
     public static final String DEFAULT_REQUEST_ACKS = "1";
+    public static final String DEFAULT_KEY_SERIALIZER_CLASS = "kafka.serializer.StringEncoder";
 }

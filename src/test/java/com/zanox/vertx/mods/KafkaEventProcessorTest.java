@@ -20,6 +20,7 @@ import com.zanox.vertx.mods.internal.KafkaProperties;
 import com.zanox.vertx.mods.internal.MessageSerializerType;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -33,6 +34,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 
+@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class KafkaEventProcessorTest {
 

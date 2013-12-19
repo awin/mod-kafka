@@ -19,7 +19,6 @@ import com.zanox.vertx.mods.internal.MessageSerializerType;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.ProducerConfig;
 
-import java.nio.ByteBuffer;
 import java.util.Properties;
 
 /**
@@ -41,7 +40,7 @@ public class KafkaProducerFactory {
 
         switch (serializerType) {
                 case BYTE_SERIALIZER:
-                    producer = new Producer<String, ByteBuffer>(new ProducerConfig(properties));
+                    producer = new Producer<String, byte[]>(new ProducerConfig(properties));
                     break;
                 case STRING_SERIALIZER:
                     producer = new Producer<String, String>(new ProducerConfig(properties));
