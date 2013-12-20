@@ -1,4 +1,4 @@
-Kafka
+Vert.x Kafka Module
 =========
 
 Kafka module allows to receive events published by other Vert.x verticles and send those events to Kafka broker.
