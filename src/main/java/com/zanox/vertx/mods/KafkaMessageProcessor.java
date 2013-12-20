@@ -45,7 +45,7 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
     private KafkaProducerFactory kafkaProducerFactory;
 
 
-    private KafkaMessageProcessor() {
+    public KafkaMessageProcessor() {
         messageHandlerFactory = new MessageHandlerFactory();
         kafkaProducerFactory = new KafkaProducerFactory();
     }
