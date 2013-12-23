@@ -41,7 +41,7 @@ For example:
     "kafka-topic", "test-topic",
     "kafka-partition", "test-partition",
     "request.required.acks": "1",
-    "serializer.class": "kafka.serializer.StringEncoder"
+    "serializer.class": "kafka.serializer.DefaultEncoder"
 }
 ```
 
@@ -54,7 +54,7 @@ The detailed description of each parameter:
 * `request.required.acks` (optional) - Property to show if Kafka producer needs to wait until the message has been received by Kafka broker. _Possible values are:_  0, which means that the producer never waits for an acknowledgement from the broker;
                                               1, which means that the producer gets an acknowledgement after the leader replica has received the data;
                                              -1, which means that the producer gets an acknowledgement after all in-sync replicas have received the data. Default is: `1`
-* `serializer.class` (optional) - The serializer class for messages. Default is: `kafka.serializer.StringEncoder`
+* `serializer.class` (optional) - The serializer class for messages. Options are `kafka.serializer.DefaultEncoder` and `kafka.serializer.StringEncoder`. The `kafka.serializer.DefaultEncoder` is the default option.
 
 Usage
 =======
@@ -82,12 +82,22 @@ Example:
 
 ```
 
-After sending messages from your application in the following format:
+You can send messages from your application in Vert.x's JsonObject format, where the key must be `"payload"` string, and the value can be either byte arrey or string. See below for more details:
+
+For Byte Array type
 ```java
 JsonObject jsonObject = new JsonObject();
-jsonObject.putString("content", "your message goes here");
+jsonObject.putString("payload", "your message goes here".getBytes());
 ```
-you can verify that you receive them in Kafka server by creating consumer via console:
+
+For String type
+```java
+JsonObject jsonObject = new JsonObject();
+jsonObject.putString("payload", "your message goes here");
+```
+For this use case you need to explicitly specify the `serializer.class` in configuration to have the value "kafka.serializer.StringEncoder".
+
+Then you can verify that you receive those messages in Kafka server by creating consumer via console:
 
 1. cd kafka-[version]
 2. bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning
