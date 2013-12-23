@@ -4,7 +4,7 @@
 
     <groupId>com.zanox.vertx</groupId>
     <artifactId>mod-kafka</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Kafka module for Vert.x</name>
@@ -23,7 +23,7 @@
         <connection>scm:git:git@github.com:zanox/mod-kafka.git</connection>
         <developerConnection>scm:git:git@github.com:zanox/mod-kafka.git</developerConnection>
         <url>git@github.com:zanox/mod-kafka.git</url>
-        <tag>mod-kafka-1.0.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>
