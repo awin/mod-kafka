@@ -76,8 +76,6 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
 
     @Override
     public void handle(Message<JsonObject> event) {
-        logger.info("Received message '{}' from EventBus." + event.body());
-
         sendMessageToKafka(producer, event);
     }
 
@@ -107,7 +105,6 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
      * @param event    event that should be sent to Kafka Broker
      */
     protected void sendMessageToKafka(Producer producer, Message<JsonObject> event) {
-        logger.info("Sending kafka message to kafka: " + event.body());
 
         if(!isValid(event.body().getString(PAYLOAD))) {
             logger.error("Invalid message provided. Message not sent to kafka...");
@@ -119,7 +116,7 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
             messageHandler.send(producer, getTopic(), getPartition(), event.body());
 
             sendOK(event);
-            logger.info("Message '{}' sent to kafka." + event.body().getString(PAYLOAD));
+            logger.info("Message sent to kafka. Payload: " + event.body().getString(PAYLOAD));
         } catch (FailedToSendMessageException ex) {
             sendError(event, "Failed to send message to Kafka broker...", ex);
         }
