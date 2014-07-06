@@ -33,7 +33,7 @@ public final class KafkaProperties {
 
     public static final String DEFAULT_TOPIC = "default-topic";
     public static final String DEFAULT_PARTITION = "default-partition";
-    public static final String DEFAULT_BROKER_LIST = "localhost:9092";
+    public static final String DEFAULT_BROKER_LIST = "192.168.86.10:9092";
     public static final String DEFAULT_REQUEST_ACKS = "1";
     public static final String DEFAULT_KEY_SERIALIZER_CLASS = "kafka.serializer.StringEncoder";
 }
