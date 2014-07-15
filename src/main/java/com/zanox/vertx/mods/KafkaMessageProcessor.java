@@ -26,7 +26,7 @@ import org.vertx.java.core.json.JsonObject;
 
 import java.util.Properties;
 
-import static com.zanox.vertx.mods.internal.EventProperties.PAYLOAD;
+import static com.zanox.vertx.mods.internal.EventProperties.*;
 import static com.zanox.vertx.mods.internal.KafkaProperties.*;
 
 /**
@@ -114,10 +114,13 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
 
         try {
             final MessageHandler messageHandler = messageHandlerFactory.createMessageHandler(serializerType);
-            messageHandler.send(producer, getTopic(), getPartition(), event.body());
+
+            String topic = isValid(event.body().getString(TOPIC)) ? event.body().getString(TOPIC) : getTopic();     
+
+            messageHandler.send(producer, topic, getPartition(), event.body());
 
             sendOK(event);
-            logger.info("Message sent to kafka. Payload: " + event.body().getString(PAYLOAD));
+            logger.info(String.format("Message sent to kafka topic: %s. Payload: %s", topic, event.body().getString(PAYLOAD)));
         } catch (FailedToSendMessageException ex) {
             sendError(event, "Failed to send message to Kafka broker...", ex);
         }

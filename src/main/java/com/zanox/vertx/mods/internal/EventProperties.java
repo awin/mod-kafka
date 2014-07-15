@@ -25,4 +25,5 @@ public class EventProperties {
 
     public static final String HEADER = "header";
     public static final String PAYLOAD = "payload";
+    public static final String TOPIC = "topic";
 }

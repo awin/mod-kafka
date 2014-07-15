@@ -27,9 +27,7 @@ import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.testtools.TestVerticle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.vertx.testtools.VertxAssert.testComplete;
 
 
@@ -70,8 +68,8 @@ public class StringSerializerIT extends TestVerticle {
 
         Handler<Message<JsonObject>> replyHandler = new Handler<Message<JsonObject>>() {
             public void handle(Message<JsonObject> message) {
-                // assertEquals("error", message.body().getString("status"));
-                // assertTrue(message.body().getString("message").equals("Failed to send message to Kafka broker..."));
+                assertEquals("error", message.body().getString("status"));
+                assertTrue(message.body().getString("message").equals("Failed to send message to Kafka broker..."));
                 testComplete();
             }
         };

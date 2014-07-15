@@ -68,8 +68,8 @@ public class ByteArraySerializerIT extends TestVerticle {
 
         Handler<Message<JsonObject>> replyHandler = new Handler<Message<JsonObject>>() {
             public void handle(Message<JsonObject> message) {
-                // assertEquals("error", message.body().getString("status"));
-                // assertTrue(message.body().getString("message").equals("Failed to send message to Kafka broker..."));
+                assertEquals("error", message.body().getString("status"));
+                assertTrue(message.body().getString("message").equals("Failed to send message to Kafka broker..."));
                 testComplete();
             }
         };

@@ -31,7 +31,7 @@ public final class KafkaProperties {
     public static final String KAFKA_PARTITION = "kafka-partition";
 
 
-    public static final String DEFAULT_TOPIC = "default-topic";
+    public static final String DEFAULT_TOPIC = "kafka-rock";
     public static final String DEFAULT_PARTITION = "default-partition";
     public static final String DEFAULT_BROKER_LIST = "192.168.86.10:9092";
     public static final String DEFAULT_REQUEST_ACKS = "1";
