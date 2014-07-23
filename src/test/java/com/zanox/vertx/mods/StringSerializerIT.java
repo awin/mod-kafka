@@ -27,9 +27,7 @@ import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.testtools.TestVerticle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.vertx.testtools.VertxAssert.testComplete;
 
 
@@ -51,7 +49,7 @@ public class StringSerializerIT extends TestVerticle {
         config.putString("kafka-partition", KafkaProperties.DEFAULT_PARTITION);
         config.putString("request.required.acks", KafkaProperties.DEFAULT_REQUEST_ACKS);
         config.putString("serializer.class", MessageSerializerType.STRING_SERIALIZER.getValue());
-
+        container.logger().info("modulename: " +System.getProperty("vertx.modulename"));
         container.deployModule(System.getProperty("vertx.modulename"), config, new AsyncResultHandler<String>() {
             @Override
             public void handle(AsyncResult<String> asyncResult) {

@@ -40,7 +40,7 @@ import static org.vertx.testtools.VertxAssert.testComplete;
 public class KafkaModuleDeployWithCorrectConfigIT extends TestVerticle {
 
     private static final String ADDRESS = "default-address";
-    private static final String MESSAGE = "Test message!";
+    private static final String MESSAGE = "Test message from KafkaModuleDeployWithCorrectConfigIT!";
 
     @Override
     public void start() {

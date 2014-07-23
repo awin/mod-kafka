@@ -17,6 +17,7 @@ package com.zanox.vertx.mods;
 
 
 import com.zanox.vertx.mods.handlers.StringMessageHandler;
+import com.zanox.vertx.mods.internal.EventProperties;
 import com.zanox.vertx.mods.internal.KafkaProperties;
 import com.zanox.vertx.mods.internal.MessageSerializerType;
 import kafka.javaapi.producer.Producer;
@@ -66,7 +67,8 @@ public class KafkaEventProcessorTest {
         JsonObject jsonObjectMock = mock(JsonObject.class);
 
         when(event.body()).thenReturn(jsonObjectMock);
-        when(jsonObjectMock.getString(anyString())).thenReturn("test");
+        when(jsonObjectMock.getString(EventProperties.TOPIC)).thenReturn("");
+        when(jsonObjectMock.getString(EventProperties.PAYLOAD)).thenReturn("test payload");
 
         StringMessageHandler messageHandler = mock(StringMessageHandler.class);
         when(messageHandlerFactory.createMessageHandler(any(MessageSerializerType.class))).
@@ -75,6 +77,30 @@ public class KafkaEventProcessorTest {
         kafkaMessageProcessorSpy.sendMessageToKafka(producer, event);
 
         verify(messageHandler, times(1)).send(producer, "default-topic", "default-partition", event.body());
+    }
+
+    @Test
+    public void sendMessageToKafkaWithTopic() {
+        KafkaMessageProcessor kafkaMessageProcessorSpy = spy(kafkaMessageProcessor);
+
+        when(kafkaMessageProcessorSpy.getTopic()).thenReturn("default-topic");
+        when(kafkaMessageProcessorSpy.getPartition()).thenReturn("default-partition");
+        when(kafkaMessageProcessorSpy.getSerializerType()).thenReturn(MessageSerializerType.STRING_SERIALIZER);
+
+        JsonObject jsonObjectMock = mock(JsonObject.class);
+        String messageSpecificTopic = "foo-topic";
+
+        when(event.body()).thenReturn(jsonObjectMock);
+        when(jsonObjectMock.getString(EventProperties.TOPIC)).thenReturn(messageSpecificTopic);
+        when(jsonObjectMock.getString(EventProperties.PAYLOAD)).thenReturn("test payload");
+
+        StringMessageHandler messageHandler = mock(StringMessageHandler.class);
+        when(messageHandlerFactory.createMessageHandler(any(MessageSerializerType.class))).
+                thenReturn(messageHandler);
+
+        kafkaMessageProcessorSpy.sendMessageToKafka(producer, event);
+
+        verify(messageHandler, times(1)).send(producer, messageSpecificTopic, "default-partition", event.body());
     }
 
     @Test

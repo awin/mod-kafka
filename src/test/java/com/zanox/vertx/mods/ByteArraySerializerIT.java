@@ -37,7 +37,7 @@ import static org.vertx.testtools.VertxAssert.testComplete;
 public class ByteArraySerializerIT extends TestVerticle {
 
     private static final String ADDRESS = "default-address";
-    private static final String MESSAGE = "Test message!";
+    private static final String MESSAGE = "Test bytes message!";
 
     @Override
     public void start() {

@@ -26,7 +26,7 @@ import org.vertx.java.core.json.JsonObject;
 
 import java.util.Properties;
 
-import static com.zanox.vertx.mods.internal.EventProperties.PAYLOAD;
+import static com.zanox.vertx.mods.internal.EventProperties.*;
 import static com.zanox.vertx.mods.internal.KafkaProperties.*;
 
 /**
@@ -107,16 +107,20 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
     protected void sendMessageToKafka(Producer producer, Message<JsonObject> event) {
 
         if(!isValid(event.body().getString(PAYLOAD))) {
-            logger.error("Invalid message provided. Message not sent to kafka...");
+            logger.error("Invalid kafka message provided. Message not sent to kafka...");
+            sendError(event, String.format("Invalid kafka message provided. Property [%s] is not set.", PAYLOAD)) ;
             return;
         }
 
         try {
             final MessageHandler messageHandler = messageHandlerFactory.createMessageHandler(serializerType);
-            messageHandler.send(producer, getTopic(), getPartition(), event.body());
+
+            String topic = isValid(event.body().getString(TOPIC)) ? event.body().getString(TOPIC) : getTopic();     
+
+            messageHandler.send(producer, topic, getPartition(), event.body());
 
             sendOK(event);
-            logger.info("Message sent to kafka. Payload: " + event.body().getString(PAYLOAD));
+            logger.info(String.format("Message sent to kafka topic: %s. Payload: %s", topic, event.body().getString(PAYLOAD)));
         } catch (FailedToSendMessageException ex) {
             sendError(event, "Failed to send message to Kafka broker...", ex);
         }

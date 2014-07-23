@@ -3,7 +3,7 @@
 
     <groupId>com.zanox.vertx</groupId>
     <artifactId>mod-kafka</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     
@@ -59,22 +59,22 @@
         <skipSigning>true</skipSigning>
 
         <!--Dependency versions-->
-        <version.vertx>2.1M1</version.vertx>
-        <version.kafka>0.8.0-beta1</version.kafka>
-        <version.scala>2.9.0</version.scala>
-        <version.slf4j>1.7.2</version.slf4j>
+        <version.vertx>2.1.1</version.vertx>
+        <version.kafka>0.8.1.1</version.kafka>
+        <version.scala>2.10.4</version.scala>
+        <version.slf4j>1.7.7</version.slf4j>
         <version.yammer.metrics.core>2.2.0</version.yammer.metrics.core>
         <version.yammer.metrics.graphite>2.2.0</version.yammer.metrics.graphite>
-        <version.vertx.testtools>2.0.2-final</version.vertx.testtools>
+        <version.vertx.testtools>2.0.3-final</version.vertx.testtools>
         <version.junit>4.11</version.junit>
         <version.mockito>1.9.5</version.mockito>
 
         <!--Plugin versions-->
         <version.maven.compiler.plugin>3.0</version.maven.compiler.plugin>
         <version.maven.resources.plugin>2.6</version.maven.resources.plugin>
-        <version.maven.vertx.plugin>2.0.1-final</version.maven.vertx.plugin>
+        <version.maven.vertx.plugin>2.0.7-final</version.maven.vertx.plugin>
         <version.maven.surefire.plugin>2.16</version.maven.surefire.plugin>
-        <version.maven.failsafe.plugin>2.6</version.maven.failsafe.plugin>
+        <version.maven.failsafe.plugin>2.14</version.maven.failsafe.plugin>
         <version.maven.javadoc.plugin>2.9.1</version.maven.javadoc.plugin>
         <version.maven.source.plugin>2.2.1</version.maven.source.plugin>
         <version.maven.dependency.plugin>2.7</version.maven.dependency.plugin>
@@ -107,7 +107,7 @@
         <!-- Kafka dependencies -->
         <dependency>
             <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_2.9.2</artifactId>
+            <artifactId>kafka_2.10</artifactId>
             <version>${version.kafka}</version>
         </dependency>
         <dependency>
