@@ -23,6 +23,7 @@ import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
+import com.timgroup.statsd.NonBlockingStatsDClient;
 
 import java.util.Properties;
 
@@ -43,6 +44,9 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
 
     private MessageHandlerFactory messageHandlerFactory;
     private KafkaProducerFactory kafkaProducerFactory;
+    
+    private NonBlockingStatsDClient statsd;
+    private boolean useStatsD;
 
 
     public KafkaMessageProcessor() {
@@ -60,6 +64,14 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
                 MessageSerializerType.BYTE_SERIALIZER.toString()));
 
         producer = createProducer();
+        
+        useStatsD = Boolean.getBoolean(getOptionalStringConfig(STATSD_ENABLED, DEFAULT_STATSD_ENABLED));
+        
+        if (useStatsD)
+        	statsd = new NonBlockingStatsDClient(
+        		getOptionalStringConfig(STATSD_PREFIX, DEFAULT_STATSD_PREFIX),
+        		getOptionalStringConfig(STATSD_HOST, DEFAULT_STATSD_HOST),
+        		Integer.parseInt(getOptionalStringConfig(STATSD_PORT, DEFAULT_STATSD_PORT)));
 
         // Get the address of EventBus where the message was published
         final String address = getMandatoryStringConfig("address");
@@ -117,8 +129,14 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
 
             String topic = isValid(event.body().getString(TOPIC)) ? event.body().getString(TOPIC) : getTopic();     
 
+            long start = System.currentTimeMillis();
+            
             messageHandler.send(producer, topic, getPartition(), event.body());
-
+            
+            if (useStatsD) {
+            	statsd.recordExecutionTime("subitted", (int)(System.currentTimeMillis()-start));
+            }
+            
             sendOK(event);
             logger.info(String.format("Message sent to kafka topic: %s. Payload: %s", topic, event.body().getString(PAYLOAD)));
         } catch (FailedToSendMessageException ex) {
