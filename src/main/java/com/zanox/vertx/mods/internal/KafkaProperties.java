@@ -29,23 +29,11 @@ public final class KafkaProperties {
     public static final String KEY_SERIALIZER_CLASS = "key.serializer.class";
     public static final String KAFKA_TOPIC = "kafka-topic";
     public static final String KAFKA_PARTITION = "kafka-partition";
-    
-    public static final String STATSD_ENABLED = "statsd.enabled";
-    public static final String STATSD_PREFIX = "statsd.enabled";
-    public static final String STATSD_HOST = "statsd.enabled";
-    public static final String STATSD_PORT = "statsd.enabled";
-
-
+   
     public static final String DEFAULT_TOPIC = "default-topic";
     public static final String DEFAULT_PARTITION = "default-partition";
     public static final String DEFAULT_BROKER_LIST = "localhost:9092";
     public static final String DEFAULT_REQUEST_ACKS = "1";
     public static final String DEFAULT_KEY_SERIALIZER_CLASS = "kafka.serializer.StringEncoder";
     
-    public static final String DEFAULT_STATSD_ENABLED = "false";
-    public static final String DEFAULT_STATSD_PREFIX = "vertx.kafka";
-    public static final String DEFAULT_STATSD_HOST = "localhost";
-    public static final String DEFAULT_STATSD_PORT = "8125";
-    
-
 }
