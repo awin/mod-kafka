@@ -28,7 +28,6 @@ import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
-import org.vertx.java.platform.Container;
 
 import java.util.Properties;
 
@@ -51,7 +50,7 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
     private MessageHandlerFactory messageHandlerFactory;
     private KafkaProducerFactory kafkaProducerFactory;
     
-    private StatsDClient statsdClient;
+    private StatsDClient statsDClient;
 
     public KafkaMessageProcessor() {
         messageHandlerFactory = new MessageHandlerFactory();
@@ -69,7 +68,7 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
 
         producer = createProducer();
         
-        statsdClient = createStatsDClient();
+        statsDClient = createStatsDClient();
         
         // Get the address of EventBus where the message was published
         final String address = getMandatoryStringConfig("address");
@@ -77,15 +76,13 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
         vertx.eventBus().registerHandler(address, this);
     }
 
-	
-
     @Override
     public void stop() {
         if (producer != null) {
             producer.close();
         }
-        if (statsdClient != null) {
-        	statsdClient.stop();
+        if (statsDClient != null) {
+        	statsDClient.stop();
         }
     }
 
@@ -114,7 +111,11 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
     }
     
     /**
-     * Returns an initialized instance of the statsd client
+     * Returns an initialized instance of the StatsDClient If StatsD is enabled
+     * this is a NonBlockingStatsDClient which guarantees not to block the thread or 
+     * throw exceptions.   If StatsD is not enabled it creates a NoOpStatsDClient which 
+     * contains all empty methods
+     * 
      * @return initialized StatsDClient
      */
     private StatsDClient createStatsDClient() {
@@ -155,7 +156,7 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
             
             messageHandler.send(producer, topic, getPartition(), event.body());
             
-            statsdClient.recordExecutionTime("submitted", (int)(System.currentTimeMillis()-startTime));
+            statsDClient.recordExecutionTime("submitted", (int)(System.currentTimeMillis()-startTime));
             
             
             sendOK(event);
