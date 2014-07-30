@@ -29,7 +29,7 @@ When deploying this module, you need to provide the following configuration:
     "kafka-topic", <kafka-topic>,
     "kafka-partition", <kafka-partition>
     "request.required.acks": <request.required.acks>,
-    "serializer.class": <serializer.class>,
+    "serializer.class": <serializer.class>
 }
 ```
 
