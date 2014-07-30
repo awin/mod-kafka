@@ -41,11 +41,7 @@ For example:
     "kafka-topic", "test-topic",
     "kafka-partition", "test-partition",
     "request.required.acks": "1",
-    "serializer.class": <serializer.class>,
-  	"statsd.enabled": "true",
-    "statsd.host": "localhost",
-    "statsd.port": "9292",
-    "statsd.prefix": "vertx.kafka"
+    "serializer.class": "kafka.serializer.DefaultEncoder",
 }
 ```
 
@@ -63,13 +59,13 @@ The detailed description of each parameter:
 
 Optional StatsD Configuration
 =============================
-If you would like to capture timing information using StatsD you can includ the optional StatsD configuration information as follows:
+If you would like to capture timing information using StatsD you can enable the optional statsd integration.  This will make use of the excellent non-blocking [java-statsd-client](https://github.com/tim-group/java-statsd-client)
 
 ```javascript
 {
-    "statsd.enabled": <statsd.enabled defaut:"false">,
+    "statsd.enabled": <statsd.enabled defaut:false>,
     "statsd.host": <statsd.host default: "localhost">,
-    "statsd.port": <statsd.port default: "9292">,
+    "statsd.port": <statsd.port default: 8125>,
     "statsd.prefix": <statsd.prefix default: "vertx.kafka">
 }
 ```
@@ -77,10 +73,10 @@ If you would like to capture timing information using StatsD you can includ the 
 For example:
 ```javascript
 {
-  	"statsd.enabled": "true",
+  	"statsd.enabled": true,
     "statsd.host": "localhost",
-    "statsd.port": "9292",
-    "statsd.prefix": "vertx.kafka"
+    "statsd.port": 8125,
+    "statsd.prefix": "myapp.prefix"
 }
 ```
 
@@ -88,7 +84,7 @@ The detailed description of each parameter:
 
 * `statsd.enabled` (optional) - Boolean string indicating whether statds logging is enabled. Default is: `false`
 * `statsd.host` (optional) - Hostname of the statsd server. Default is: `localhost`
-* `statsd.post` (optional) - Port for the statsd server. Default is: `9292`
+* `statsd.post` (optional) - Port for the statsd server. Default is: `8125`
 * `statsd.prefix` (optional) - Prefix for statsd log messages. Default is: `vertx.kafka`
 
 
