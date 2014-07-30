@@ -41,6 +41,7 @@ For example:
     "kafka-topic", "test-topic",
     "kafka-partition", "test-partition",
     "request.required.acks": "1",
+    "serializer.class": <serializer.class>,
   	"statsd.enabled": "true",
     "statsd.host": "localhost",
     "statsd.port": "9292",
@@ -58,10 +59,38 @@ The detailed description of each parameter:
                                               1, which means that the producer gets an acknowledgement after the leader replica has received the data;
                                              -1, which means that the producer gets an acknowledgement after all in-sync replicas have received the data. Default is: `1`
 * `serializer.class` (optional) - The serializer class for messages. Options are `kafka.serializer.DefaultEncoder` and `kafka.serializer.StringEncoder`. The `kafka.serializer.DefaultEncoder` is the default option.
+
+
+Optional StatsD Configuration
+=============================
+If you would like to capture timing information using StatsD you can includ the optional StatsD configuration information as follows:
+
+```javascript
+{
+    "statsd.enabled": <statsd.enabled defaut:"false">,
+    "statsd.host": <statsd.host default: "localhost">,
+    "statsd.port": <statsd.port default: "9292">,
+    "statsd.prefix": <statsd.prefix default: "vertx.kafka">
+}
+```
+
+For example:
+```javascript
+{
+  	"statsd.enabled": "true",
+    "statsd.host": "localhost",
+    "statsd.port": "9292",
+    "statsd.prefix": "vertx.kafka"
+}
+```
+
+The detailed description of each parameter:
+
 * `statsd.enabled` (optional) - Boolean string indicating whether statds logging is enabled. Default is: `false`
 * `statsd.host` (optional) - Hostname of the statsd server. Default is: `localhost`
 * `statsd.post` (optional) - Port for the statsd server. Default is: `9292`
 * `statsd.prefix` (optional) - Prefix for statsd log messages. Default is: `vertx.kafka`
+
 
 
 Usage
