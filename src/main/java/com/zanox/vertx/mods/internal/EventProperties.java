@@ -16,9 +16,9 @@
 package com.zanox.vertx.mods.internal;
 
 /**
- * Stores default kafka properties.
+ * Stores default event properties.
  */
-public class EventProperties {
+public final class EventProperties {
 
     /* Non-instantiable class */
     private EventProperties() {}

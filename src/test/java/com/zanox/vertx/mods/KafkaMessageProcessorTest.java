@@ -35,7 +35,7 @@ import static org.mockito.Mockito.*;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class KafkaEventProcessorTest {
+public class KafkaMessageProcessorTest {
 
     @Mock
     private Producer<String, String> producer;
