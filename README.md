@@ -40,7 +40,7 @@ For example:
     "broker.list": "localhost:9092",
     "kafka-topic", "test-topic",
     "kafka-partition", "test-partition",
-    "request.required.acks": "1",
+    "request.required.acks": 1,
     "serializer.class": "kafka.serializer.DefaultEncoder"
 }
 ```
