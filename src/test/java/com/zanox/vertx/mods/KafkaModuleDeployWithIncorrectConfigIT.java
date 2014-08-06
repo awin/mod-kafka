@@ -43,7 +43,7 @@ public class KafkaModuleDeployWithIncorrectConfigIT extends TestVerticle {
         config.putString("metadata.broker.list", KafkaProperties.DEFAULT_BROKER_LIST);
         config.putString("kafka-topic", KafkaProperties.DEFAULT_TOPIC);
         config.putString("kafka-partition", KafkaProperties.DEFAULT_PARTITION);
-        config.putString("request.required.acks", KafkaProperties.DEFAULT_REQUEST_ACKS);
+        config.putNumber("request.required.acks", KafkaProperties.DEFAULT_REQUEST_ACKS);
         config.putString("serializer.class", MessageSerializerType.STRING_SERIALIZER.getValue());
 
         container.deployModule(System.getProperty("vertx.modulename"), config, new AsyncResultHandler<String>() {
@@ -59,6 +59,6 @@ public class KafkaModuleDeployWithIncorrectConfigIT extends TestVerticle {
 
     @Test
     public void sendMessage() throws Exception {
-        // The test should fail in starting the deployment
+        // The test should fail to start the deployment
     }
 }

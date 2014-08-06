@@ -27,20 +27,23 @@ import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.testtools.TestVerticle;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.vertx.testtools.VertxAssert.testComplete;
 
 /**
- * Tests mod-kafka module specifying correct configuration with all required parameters.
+ * Tests mod-kafka module with enabled StatsD configuration. The deployment should be successfull and
+ * the executor call of StatsD should not fail.
  *
  * This test sends an event to Vert.x EventBus, then registers a handler to handle that event
  * and send it to Kafka broker, by creating Kafka Producer. It checks that the flow works correctly
  * until the point, where message is sent to Kafka.
  */
-public class KafkaModuleDeployWithCorrectConfigIT extends TestVerticle {
+public class KafkaModuleDeployWithStatsdEnabledConfigIT extends TestVerticle {
 
     private static final String ADDRESS = "default-address";
-    private static final String MESSAGE = "Test message from KafkaModuleDeployWithCorrectConfigIT!";
+    private static final String MESSAGE = "Test message from KafkaModuleDeployWithStatsdEnabledConfigIT!";
 
     @Override
     public void start() {
@@ -52,20 +55,25 @@ public class KafkaModuleDeployWithCorrectConfigIT extends TestVerticle {
         config.putString("kafka-partition", KafkaProperties.DEFAULT_PARTITION);
         config.putNumber("request.required.acks", KafkaProperties.DEFAULT_REQUEST_ACKS);
         config.putString("serializer.class", MessageSerializerType.STRING_SERIALIZER.getValue());
+        config.putBoolean("statsd.enabled", true);
+        config.putString("statsd.host", "localhost");
+        config.putNumber("statsd.port", 8125);
+        config.putString("statsd.prefix", "testapp.prefix");
 
         container.deployModule(System.getProperty("vertx.modulename"), config, new AsyncResultHandler<String>() {
             @Override
             public void handle(AsyncResult<String> asyncResult) {
                 assertTrue(asyncResult.succeeded());
                 assertNotNull("DeploymentID should not be null", asyncResult.result());
-                KafkaModuleDeployWithCorrectConfigIT.super.start();
+                KafkaModuleDeployWithStatsdEnabledConfigIT.super.start();
             }
         });
     }
 
 
+    /* The deployment should be successfull and StatsD executor call should also be successful */
     @Test(expected = FailedToSendMessageException.class)
-    public void sendMessage() throws Exception {
+    public void sendMessageStatsDDisabled() throws Exception {
         JsonObject jsonObject = new JsonObject();
         jsonObject.putString(EventProperties.PAYLOAD, MESSAGE);
 

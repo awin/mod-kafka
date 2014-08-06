@@ -100,11 +100,11 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
         final Properties props = new Properties();
 
         final String brokerList = getOptionalStringConfig(BROKER_LIST, DEFAULT_BROKER_LIST);
-        final String requestAcks = getOptionalStringConfig(REQUEST_ACKS, DEFAULT_REQUEST_ACKS);
+        final int requestAcks = getOptionalIntConfig(REQUEST_ACKS, DEFAULT_REQUEST_ACKS);
 
         props.put(BROKER_LIST, brokerList);
         props.put(SERIALIZER_CLASS, serializerType.getValue());
-        props.put(REQUEST_ACKS, requestAcks);
+        props.put(REQUEST_ACKS, String.valueOf(requestAcks));
         props.put(KEY_SERIALIZER_CLASS, DEFAULT_KEY_SERIALIZER_CLASS);     // always use String serializer for the key
 
         return kafkaProducerFactory.createProducer(serializerType, props);
@@ -118,14 +118,14 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
      * 
      * @return initialized StatsDClient
      */
-    private StatsDClient createStatsDClient() {
+    protected StatsDClient createStatsDClient() {
     	
     	final boolean enabled = getOptionalBooleanConfig(STATSD_ENABLED, DEFAULT_STATSD_ENABLED);
     	
     	if (enabled) {
 			final String prefix = getOptionalStringConfig(STATSD_PREFIX, DEFAULT_STATSD_PREFIX);
 	    	final String host = getOptionalStringConfig(STATSD_HOST, DEFAULT_STATSD_HOST);
-	    	final int port = (int)getOptionalLongConfig(STATSD_PORT, DEFAULT_STATSD_PORT);
+	    	final int port = getOptionalIntConfig(STATSD_PORT, DEFAULT_STATSD_PORT);
 			return new NonBlockingStatsDClient(prefix, host, port);
 		}
 		else {
@@ -170,15 +170,15 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
         return str != null && !str.isEmpty();
     }
 
-    public String getTopic() {
+    protected String getTopic() {
         return topic;
     }
 
-    public String getPartition() {
+    protected String getPartition() {
         return partition;
     }
 
-    public MessageSerializerType getSerializerType() {
+    protected MessageSerializerType getSerializerType() {
         return serializerType;
     }
 }

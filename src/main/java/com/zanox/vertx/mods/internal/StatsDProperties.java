@@ -28,10 +28,10 @@ public final class StatsDProperties {
     public static final String STATSD_HOST = "statsd.host";
     public static final String STATSD_PORT = "statsd.port";
 
-    public static final Boolean DEFAULT_STATSD_ENABLED = false;
+    public static final boolean DEFAULT_STATSD_ENABLED = false;
     public static final String DEFAULT_STATSD_PREFIX = "vertx.kafka";
     public static final String DEFAULT_STATSD_HOST = "localhost";
-    public static final Integer DEFAULT_STATSD_PORT = 8125;
+    public static final int DEFAULT_STATSD_PORT = 8125;
     
 
 }

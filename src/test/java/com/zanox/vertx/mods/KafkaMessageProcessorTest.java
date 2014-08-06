@@ -16,6 +16,7 @@
 package com.zanox.vertx.mods;
 
 
+import com.timgroup.statsd.StatsDClient;
 import com.zanox.vertx.mods.handlers.StringMessageHandler;
 import com.zanox.vertx.mods.internal.EventProperties;
 import com.zanox.vertx.mods.internal.KafkaProperties;
@@ -51,6 +52,9 @@ public class KafkaMessageProcessorTest {
 
     @Mock
     private KafkaProducerFactory kafkaProducerFactory;
+
+    @Mock
+    private StatsDClient statsDClient;
 
     @InjectMocks
     private KafkaMessageProcessor kafkaMessageProcessor;
@@ -125,4 +129,28 @@ public class KafkaMessageProcessorTest {
 
         verify(kafkaMessageProcessorSpy).sendMessageToKafka(producer, event);
     }
+
+    @Test
+    public void sendMessageToKafkaVerifyStatsDExecutorCalled() {
+        KafkaMessageProcessor kafkaMessageProcessorSpy = spy(kafkaMessageProcessor);
+
+        when(kafkaMessageProcessorSpy.getTopic()).thenReturn("default-topic");
+        when(kafkaMessageProcessorSpy.getPartition()).thenReturn("default-partition");
+        when(kafkaMessageProcessorSpy.getSerializerType()).thenReturn(MessageSerializerType.STRING_SERIALIZER);
+
+        JsonObject jsonObjectMock = mock(JsonObject.class);
+
+        when(event.body()).thenReturn(jsonObjectMock);
+        when(jsonObjectMock.getString(EventProperties.TOPIC)).thenReturn("");
+        when(jsonObjectMock.getString(EventProperties.PAYLOAD)).thenReturn("test payload");
+
+        StringMessageHandler messageHandler = mock(StringMessageHandler.class);
+        when(messageHandlerFactory.createMessageHandler(any(MessageSerializerType.class))).
+                thenReturn(messageHandler);
+
+        kafkaMessageProcessorSpy.sendMessageToKafka(producer, event);
+
+        verify(statsDClient, times(1)).recordExecutionTime(anyString(), anyLong());
+    }
+
 }
