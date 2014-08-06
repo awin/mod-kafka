@@ -15,10 +15,15 @@
  */
 package com.zanox.vertx.mods;
 
+import com.timgroup.statsd.NoOpStatsDClient;
+import com.timgroup.statsd.NonBlockingStatsDClient;
+import com.timgroup.statsd.StatsDClient;
 import com.zanox.vertx.mods.handlers.MessageHandler;
 import com.zanox.vertx.mods.internal.MessageSerializerType;
+
 import kafka.common.FailedToSendMessageException;
 import kafka.javaapi.producer.Producer;
+
 import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
@@ -28,6 +33,7 @@ import java.util.Properties;
 
 import static com.zanox.vertx.mods.internal.EventProperties.*;
 import static com.zanox.vertx.mods.internal.KafkaProperties.*;
+import static com.zanox.vertx.mods.internal.StatsDProperties.*;
 
 /**
  * This verticle is responsible for processing messages.
@@ -43,7 +49,8 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
 
     private MessageHandlerFactory messageHandlerFactory;
     private KafkaProducerFactory kafkaProducerFactory;
-
+    
+    private StatsDClient statsDClient;
 
     public KafkaMessageProcessor() {
         messageHandlerFactory = new MessageHandlerFactory();
@@ -60,7 +67,9 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
                 MessageSerializerType.BYTE_SERIALIZER.toString()));
 
         producer = createProducer();
-
+        
+        statsDClient = createStatsDClient();
+        
         // Get the address of EventBus where the message was published
         final String address = getMandatoryStringConfig("address");
 
@@ -71,6 +80,9 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
     public void stop() {
         if (producer != null) {
             producer.close();
+        }
+        if (statsDClient != null) {
+        	statsDClient.stop();
         }
     }
 
@@ -97,6 +109,29 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
 
         return kafkaProducerFactory.createProducer(serializerType, props);
     }
+    
+    /**
+     * Returns an initialized instance of the StatsDClient If StatsD is enabled
+     * this is a NonBlockingStatsDClient which guarantees not to block the thread or 
+     * throw exceptions.   If StatsD is not enabled it creates a NoOpStatsDClient which 
+     * contains all empty methods
+     * 
+     * @return initialized StatsDClient
+     */
+    private StatsDClient createStatsDClient() {
+    	
+    	final boolean enabled = getOptionalBooleanConfig(STATSD_ENABLED, DEFAULT_STATSD_ENABLED);
+    	
+    	if (enabled) {
+			final String prefix = getOptionalStringConfig(STATSD_PREFIX, DEFAULT_STATSD_PREFIX);
+	    	final String host = getOptionalStringConfig(STATSD_HOST, DEFAULT_STATSD_HOST);
+	    	final int port = (int)getOptionalLongConfig(STATSD_PORT, DEFAULT_STATSD_PORT);
+			return new NonBlockingStatsDClient(prefix, host, port);
+		}
+		else {
+			return new NoOpStatsDClient();
+		}
+	}
 
     /**
      * Sends messages to Kafka topic using specified properties in kafka.properties file.
@@ -117,8 +152,13 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
 
             String topic = isValid(event.body().getString(TOPIC)) ? event.body().getString(TOPIC) : getTopic();     
 
+            long startTime = System.currentTimeMillis();
+            
             messageHandler.send(producer, topic, getPartition(), event.body());
-
+            
+            statsDClient.recordExecutionTime("submitted", (int)(System.currentTimeMillis()-startTime));
+            
+            
             sendOK(event);
             logger.info(String.format("Message sent to kafka topic: %s. Payload: %s", topic, event.body().getString(PAYLOAD)));
         } catch (FailedToSendMessageException ex) {

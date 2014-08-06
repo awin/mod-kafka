@@ -68,6 +68,7 @@
         <version.vertx.testtools>2.0.3-final</version.vertx.testtools>
         <version.junit>4.11</version.junit>
         <version.mockito>1.9.5</version.mockito>
+        <version.java-statsd-client>3.0.1</version.java-statsd-client>
 
         <!--Plugin versions-->
         <version.maven.compiler.plugin>3.0</version.maven.compiler.plugin>
@@ -130,7 +131,11 @@
             <artifactId>metrics-graphite</artifactId>
             <version>${version.yammer.metrics.graphite}</version>
         </dependency>
-
+	<dependency>
+            <groupId>com.timgroup</groupId>
+            <artifactId>java-statsd-client</artifactId>
+            <version>${version.java-statsd-client}</version>
+	</dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>

@@ -56,6 +56,39 @@ The detailed description of each parameter:
                                              -1, which means that the producer gets an acknowledgement after all in-sync replicas have received the data. Default is: `1`
 * `serializer.class` (optional) - The serializer class for messages. Options are `kafka.serializer.DefaultEncoder` and `kafka.serializer.StringEncoder`. The `kafka.serializer.DefaultEncoder` is the default option.
 
+
+Optional StatsD Configuration
+=============================
+If you would like to capture timing information using StatsD you can enable the optional statsd integration.  This will make use of the excellent non-blocking [java-statsd-client](https://github.com/tim-group/java-statsd-client)
+
+```javascript
+{
+    "statsd.enabled": <statsd.enabled defaut:false>,
+    "statsd.host": <statsd.host default: "localhost">,
+    "statsd.port": <statsd.port default: 8125>,
+    "statsd.prefix": <statsd.prefix default: "vertx.kafka">
+}
+```
+
+For example:
+```javascript
+{
+  	"statsd.enabled": true,
+    "statsd.host": "localhost",
+    "statsd.port": 8125,
+    "statsd.prefix": "myapp.prefix"
+}
+```
+
+The detailed description of each parameter:
+
+* `statsd.enabled` (optional) - Boolean string indicating whether statds logging is enabled. Default is: `false`
+* `statsd.host` (optional) - Hostname of the statsd server. Default is: `localhost`
+* `statsd.post` (optional) - Port for the statsd server. Default is: `8125`
+* `statsd.prefix` (optional) - Prefix for statsd log messages. Default is: `vertx.kafka`
+
+
+
 Usage
 =======
 
