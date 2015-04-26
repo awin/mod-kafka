@@ -52,7 +52,6 @@ public class KafkaModuleDeployWithStatsdEnabledConfigIT extends TestVerticle {
         config.putString("address", ADDRESS);
         config.putString("metadata.broker.list", KafkaProperties.DEFAULT_BROKER_LIST);
         config.putString("kafka-topic", KafkaProperties.DEFAULT_TOPIC);
-        config.putString("kafka-partition", KafkaProperties.DEFAULT_PARTITION);
         config.putNumber("request.required.acks", KafkaProperties.DEFAULT_REQUEST_ACKS);
         config.putString("serializer.class", MessageSerializerType.STRING_SERIALIZER.getValue());
         config.putBoolean("statsd.enabled", true);
