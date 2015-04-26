@@ -44,7 +44,6 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
 
     private Producer producer;
     private String topic;
-    private String partition;
     private MessageSerializerType serializerType;
 
     private MessageHandlerFactory messageHandlerFactory;
@@ -62,7 +61,6 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
         super.start();
 
         topic = getOptionalStringConfig(KAFKA_TOPIC, DEFAULT_TOPIC);
-        partition = getOptionalStringConfig(KAFKA_PARTITION, DEFAULT_PARTITION);
         serializerType = MessageSerializerType.getEnum(getOptionalStringConfig(SERIALIZER_CLASS,
                 MessageSerializerType.BYTE_SERIALIZER.toString()));
 
@@ -151,10 +149,11 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
             final MessageHandler messageHandler = messageHandlerFactory.createMessageHandler(serializerType);
 
             String topic = isValid(event.body().getString(TOPIC)) ? event.body().getString(TOPIC) : getTopic();     
+            String partKey = event.body().getString(PART_KEY);
 
             long startTime = System.currentTimeMillis();
             
-            messageHandler.send(producer, topic, getPartition(), event.body());
+            messageHandler.send(producer, topic, partKey, event.body());
             
             statsDClient.recordExecutionTime("submitted", (int)(System.currentTimeMillis()-startTime));
             
@@ -172,10 +171,6 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
 
     protected String getTopic() {
         return topic;
-    }
-
-    protected String getPartition() {
-        return partition;
     }
 
     protected MessageSerializerType getSerializerType() {

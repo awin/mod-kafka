@@ -65,7 +65,6 @@ public class KafkaMessageProcessorTest {
         KafkaMessageProcessor kafkaMessageProcessorSpy = spy(kafkaMessageProcessor);
 
         when(kafkaMessageProcessorSpy.getTopic()).thenReturn("default-topic");
-        when(kafkaMessageProcessorSpy.getPartition()).thenReturn("default-partition");
         when(kafkaMessageProcessorSpy.getSerializerType()).thenReturn(MessageSerializerType.STRING_SERIALIZER);
 
         JsonObject jsonObjectMock = mock(JsonObject.class);
@@ -73,6 +72,7 @@ public class KafkaMessageProcessorTest {
         when(event.body()).thenReturn(jsonObjectMock);
         when(jsonObjectMock.getString(EventProperties.TOPIC)).thenReturn("");
         when(jsonObjectMock.getString(EventProperties.PAYLOAD)).thenReturn("test payload");
+        when(jsonObjectMock.getString(EventProperties.PART_KEY)).thenReturn("test partition key");
 
         StringMessageHandler messageHandler = mock(StringMessageHandler.class);
         when(messageHandlerFactory.createMessageHandler(any(MessageSerializerType.class))).
@@ -80,7 +80,7 @@ public class KafkaMessageProcessorTest {
 
         kafkaMessageProcessorSpy.sendMessageToKafka(producer, event);
 
-        verify(messageHandler, times(1)).send(producer, "default-topic", "default-partition", event.body());
+        verify(messageHandler, times(1)).send(producer, "default-topic", "test partition key", event.body());
     }
 
     @Test
@@ -88,7 +88,6 @@ public class KafkaMessageProcessorTest {
         KafkaMessageProcessor kafkaMessageProcessorSpy = spy(kafkaMessageProcessor);
 
         when(kafkaMessageProcessorSpy.getTopic()).thenReturn("default-topic");
-        when(kafkaMessageProcessorSpy.getPartition()).thenReturn("default-partition");
         when(kafkaMessageProcessorSpy.getSerializerType()).thenReturn(MessageSerializerType.STRING_SERIALIZER);
 
         JsonObject jsonObjectMock = mock(JsonObject.class);
@@ -97,6 +96,7 @@ public class KafkaMessageProcessorTest {
         when(event.body()).thenReturn(jsonObjectMock);
         when(jsonObjectMock.getString(EventProperties.TOPIC)).thenReturn(messageSpecificTopic);
         when(jsonObjectMock.getString(EventProperties.PAYLOAD)).thenReturn("test payload");
+        when(jsonObjectMock.getString(EventProperties.PART_KEY)).thenReturn("test partition key");
 
         StringMessageHandler messageHandler = mock(StringMessageHandler.class);
         when(messageHandlerFactory.createMessageHandler(any(MessageSerializerType.class))).
@@ -104,7 +104,7 @@ public class KafkaMessageProcessorTest {
 
         kafkaMessageProcessorSpy.sendMessageToKafka(producer, event);
 
-        verify(messageHandler, times(1)).send(producer, messageSpecificTopic, "default-partition", event.body());
+        verify(messageHandler, times(1)).send(producer, messageSpecificTopic, "test partition key", event.body());
     }
 
     @Test
@@ -113,7 +113,6 @@ public class KafkaMessageProcessorTest {
        KafkaMessageProcessor kafkaMessageProcessorSpy = spy(kafkaMessageProcessor);
 
         when(kafkaMessageProcessorSpy.getTopic()).thenReturn(KafkaProperties.DEFAULT_TOPIC);
-        when(kafkaMessageProcessorSpy.getPartition()).thenReturn(KafkaProperties.DEFAULT_PARTITION);
 
         JsonObject jsonObjectMock = mock(JsonObject.class);
 
@@ -135,7 +134,6 @@ public class KafkaMessageProcessorTest {
         KafkaMessageProcessor kafkaMessageProcessorSpy = spy(kafkaMessageProcessor);
 
         when(kafkaMessageProcessorSpy.getTopic()).thenReturn("default-topic");
-        when(kafkaMessageProcessorSpy.getPartition()).thenReturn("default-partition");
         when(kafkaMessageProcessorSpy.getSerializerType()).thenReturn(MessageSerializerType.STRING_SERIALIZER);
 
         JsonObject jsonObjectMock = mock(JsonObject.class);
