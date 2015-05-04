@@ -25,7 +25,7 @@ When deploying this module, you need to provide the following configuration:
 ```javascript
 {
     "address": <address>,
-    "broker.list": <broker.list>,
+    "metadata.broker.list": <broker.list>,
     "kafka-topic", <kafka-topic>,
     "kafka-partition", <kafka-partition>
     "request.required.acks": <request.required.acks>,
@@ -37,7 +37,7 @@ For example:
 ```javascript
 {
     "address": "test-address",
-    "broker.list": "localhost:9092",
+    "metadata.broker.list": "localhost:9092",
     "kafka-topic", "test-topic",
     "kafka-partition", "test-partition",
     "request.required.acks": 1,
@@ -48,7 +48,7 @@ For example:
 The detailed description of each parameter:
 
 * `address` (mandatory) - The address of Vert.x's EventBus, where the event has been sent by your application in order to be consumed by this module later on.
-* `broker.list` (optional) - A comma separated list of Kafka brokers. The format is "host1:port1,host2:port2". Default is: `localhost:9092`
+* `metadata.broker.list` (optional) - A comma separated list of Kafka brokers. The format is "host1:port1,host2:port2". Default is: `localhost:9092`
 * `kafka-topic` (optional) - The name of the topic where you want to send Kafka message. Default is: `test-topic`
 * `kafka-partition` (optional) - The name of specific partition where to send the Kakfa message. Default is: `test-partition`
 * `request.required.acks` (optional) - Property to show if Kafka producer needs to wait until the message has been received by Kafka broker. _Possible values are:_  0, which means that the producer never waits for an acknowledgement from the broker;
@@ -105,7 +105,7 @@ Example:
 ```java
         JsonObject config = new JsonObject();
         config.putString("address", "test-address");
-        config.putString("broker.list", "localhost:9092");
+        config.putString("metadata.broker.list", "localhost:9092");
         config.putString("kafka-topic", "test-topic");
         config.putString("kafka-partition", "test-partition");
         config.putString("request.required.acks", "1");
@@ -115,12 +115,12 @@ Example:
 
 ```
 
-You can send messages from your application in Vert.x's JsonObject format, where the key must be `"payload"` string, and the value can be either byte arrey or string. See below for more details:
+You can send messages from your application in Vert.x's JsonObject format, where the key must be `"payload"` string, and the value can be either byte array or string. See below for more details:
 
 For Byte Array type
 ```java
 JsonObject jsonObject = new JsonObject();
-jsonObject.putString("payload", "your message goes here".getBytes());
+jsonObject.putBinary("payload", "your message goes here".getBytes());
 ```
 
 For String type
@@ -129,6 +129,13 @@ JsonObject jsonObject = new JsonObject();
 jsonObject.putString("payload", "your message goes here");
 ```
 For this use case you need to explicitly specify the `serializer.class` in configuration to have the value "kafka.serializer.StringEncoder".
+
+You can also explicitly specify topic for each message:
+```java
+JsonObject jsonObject = new JsonObject();
+jsonObject.putString("payload", "your message goes here");
+jsonObject.putString("topic", "your_topic");
+```
 
 Then you can verify that you receive those messages in Kafka server by creating consumer via console:
 
