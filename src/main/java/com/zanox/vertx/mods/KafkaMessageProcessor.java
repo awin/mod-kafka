@@ -139,7 +139,7 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
      */
     protected void sendMessageToKafka(Producer producer, Message<JsonObject> event) {
 
-        if(!isValid(event.body().getString(PAYLOAD))) {
+        if (!isValid(event.body().getString(PAYLOAD))) {
             logger.error("Invalid kafka message provided. Message not sent to kafka...");
             sendError(event, String.format("Invalid kafka message provided. Property [%s] is not set.", PAYLOAD)) ;
             return;
@@ -155,7 +155,7 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
             
             messageHandler.send(producer, topic, partKey, event.body());
             
-            statsDClient.recordExecutionTime("submitted", (int)(System.currentTimeMillis()-startTime));
+            statsDClient.recordExecutionTime("submitted", (System.currentTimeMillis()-startTime));
             
             
             sendOK(event);
