@@ -70,17 +70,17 @@
         <version.java-statsd-client>3.0.1</version.java-statsd-client>
 
         <!--Plugin versions-->
-        <version.maven.compiler.plugin>3.0</version.maven.compiler.plugin>
-        <version.maven.resources.plugin>2.6</version.maven.resources.plugin>
-        <version.maven.vertx.plugin>2.0.7-final</version.maven.vertx.plugin>
-        <version.maven.surefire.plugin>2.16</version.maven.surefire.plugin>
-        <version.maven.failsafe.plugin>2.14</version.maven.failsafe.plugin>
-        <version.maven.javadoc.plugin>2.9.1</version.maven.javadoc.plugin>
-        <version.maven.source.plugin>2.2.1</version.maven.source.plugin>
-        <version.maven.dependency.plugin>2.7</version.maven.dependency.plugin>
-        <version.maven.gpg.plugin>1.4</version.maven.gpg.plugin>
-        <version.maven.release.plugin>2.4.2</version.maven.release.plugin>
-        <version.maven.assembly.plugin>2.3</version.maven.assembly.plugin>
+        <version.maven.compiler.plugin>3.3</version.maven.compiler.plugin>
+        <version.maven.resources.plugin>2.7</version.maven.resources.plugin>
+        <version.maven.vertx.plugin>2.0.11-final</version.maven.vertx.plugin>
+        <version.maven.surefire.plugin>2.18.1</version.maven.surefire.plugin>
+        <version.maven.failsafe.plugin>2.18.1</version.maven.failsafe.plugin>
+        <version.maven.javadoc.plugin>2.10.3</version.maven.javadoc.plugin>
+        <version.maven.source.plugin>2.4</version.maven.source.plugin>
+        <version.maven.dependency.plugin>2.10</version.maven.dependency.plugin>
+        <version.maven.gpg.plugin>1.6</version.maven.gpg.plugin>
+        <version.maven.release.plugin>2.5.2</version.maven.release.plugin>
+        <version.maven.assembly.plugin>2.5.4</version.maven.assembly.plugin>
     </properties>
 
     <dependencies>
@@ -188,8 +188,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${version.maven.compiler.plugin}</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
             <plugin>
