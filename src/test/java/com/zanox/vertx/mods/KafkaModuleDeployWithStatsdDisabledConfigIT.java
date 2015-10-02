@@ -18,19 +18,22 @@ package com.zanox.vertx.mods;
 import com.zanox.vertx.mods.internal.EventProperties;
 import com.zanox.vertx.mods.internal.KafkaProperties;
 import com.zanox.vertx.mods.internal.MessageSerializerType;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Handler;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import kafka.common.FailedToSendMessageException;
+import org.junit.Before;
 import org.junit.Test;
-import org.vertx.java.core.AsyncResult;
-import org.vertx.java.core.AsyncResultHandler;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.eventbus.Message;
-import org.vertx.java.core.json.JsonObject;
-import org.vertx.testtools.TestVerticle;
+import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.vertx.testtools.VertxAssert.testComplete;
 
 /**
  * Tests mod-kafka module with disabled StatsD configuration. The deployment should be successfull and
@@ -40,46 +43,51 @@ import static org.vertx.testtools.VertxAssert.testComplete;
  * and send it to Kafka broker, by creating Kafka Producer. It checks that the flow works correctly
  * until the point, where message is sent to Kafka.
  */
-public class KafkaModuleDeployWithStatsdDisabledConfigIT extends TestVerticle {
+@RunWith(VertxUnitRunner.class)
+public class KafkaModuleDeployWithStatsdDisabledConfigIT extends AbstractVertxTest {
 
     private static final String ADDRESS = "default-address";
     private static final String MESSAGE = "Test message from KafkaModuleDeployWithStatsdDisabledConfigIT!";
 
-    @Override
-    public void start() {
-
+    @Test
+    public void test(TestContext testContext) throws Exception {
         JsonObject config = new JsonObject();
-        config.putString("address", ADDRESS);
-        config.putString("metadata.broker.list", KafkaProperties.DEFAULT_BROKER_LIST);
-        config.putString("kafka-topic", KafkaProperties.DEFAULT_TOPIC);
-        config.putNumber("request.required.acks", KafkaProperties.DEFAULT_REQUEST_ACKS);
-        config.putString("serializer.class", MessageSerializerType.STRING_SERIALIZER.getValue());
-        config.putBoolean("statsd.enabled", false);
+        config.put("address", ADDRESS);
+        config.put("metadata.broker.list", KafkaProperties.DEFAULT_BROKER_LIST);
+        config.put("kafka-topic", KafkaProperties.DEFAULT_TOPIC);
+        config.put("request.required.acks", KafkaProperties.DEFAULT_REQUEST_ACKS);
+        config.put("serializer.class", MessageSerializerType.STRING_SERIALIZER.getValue());
+        config.put("statsd.enabled", false);
 
-        container.deployModule(System.getProperty("vertx.modulename"), config, new AsyncResultHandler<String>() {
-            @Override
-            public void handle(AsyncResult<String> asyncResult) {
-                assertTrue(asyncResult.succeeded());
-                assertNotNull("DeploymentID should not be null", asyncResult.result());
-                KafkaModuleDeployWithStatsdDisabledConfigIT.super.start();
+        final Async async = testContext.async();
+        final DeploymentOptions deploymentOptions = new DeploymentOptions();
+        deploymentOptions.setConfig(config);
+        vertx.deployVerticle(SERVICE_NAME, deploymentOptions, asyncResult -> {
+            assertTrue(asyncResult.succeeded());
+            assertNotNull("DeploymentID should not be null", asyncResult.result());
+
+            try {
+                sendMessageStatsDDisabled(testContext, async);
+            } catch (Exception e) {
+                testContext.fail(e);
             }
         });
+
     }
 
-
     /* The deployment should be successfull and StatsD executor call should not fail, but will not do anything */
-    @Test(expected = FailedToSendMessageException.class)
-    public void sendMessageStatsDDisabled() throws Exception {
+    public void sendMessageStatsDDisabled(TestContext testContext, Async async) throws Exception {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.putString(EventProperties.PAYLOAD, MESSAGE);
+        jsonObject.put(EventProperties.PAYLOAD, MESSAGE);
 
-        Handler<Message<JsonObject>> replyHandler = new Handler<Message<JsonObject>>() {
-            public void handle(Message<JsonObject> message) {
-                assertEquals("error", message.body().getString("status"));
-                assertTrue(message.body().getString("message").equals("Failed to send message to Kafka broker..."));
-                testComplete();
+        vertx.eventBus().send(ADDRESS, jsonObject, (Handler<AsyncResult<Message<JsonObject>>>) message -> {
+            if (message.succeeded()) {
+                assertEquals("error", message.result().body().getString("status"));
+                assertTrue(message.result().body().getString("message").equals("Failed to send message to Kafka broker..."));
+                async.complete();
+            } else {
+                testContext.fail();
             }
-        };
-        vertx.eventBus().send(ADDRESS, jsonObject, replyHandler);
+        });
     }
 }

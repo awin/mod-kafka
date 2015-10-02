@@ -15,9 +15,9 @@
  */
 package com.zanox.vertx.mods.handlers;
 
+import io.vertx.core.json.JsonObject;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
-import org.vertx.java.core.json.JsonObject;
 
 import static com.zanox.vertx.mods.internal.EventProperties.PAYLOAD;
 
@@ -33,7 +33,7 @@ public class ByteMessageHandler extends MessageHandler {
      */
     @Override
     public void send(Producer producer, String topic, String partition, JsonObject message) {
-        producer.send(new KeyedMessage<String, byte[]>(
+        producer.send(new KeyedMessage<>(
                 topic,
                 partition,
                 message.getBinary(PAYLOAD)));

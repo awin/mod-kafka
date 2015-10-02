@@ -15,8 +15,8 @@
  */
 package com.zanox.vertx.mods.handlers;
 
+import io.vertx.core.json.JsonObject;
 import kafka.javaapi.producer.Producer;
-import org.vertx.java.core.json.JsonObject;
 
 /**
  * This abstract class defines abstract method to send given messages to kafka.

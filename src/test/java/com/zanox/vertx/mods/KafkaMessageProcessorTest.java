@@ -21,19 +21,18 @@ import com.zanox.vertx.mods.handlers.StringMessageHandler;
 import com.zanox.vertx.mods.internal.EventProperties;
 import com.zanox.vertx.mods.internal.KafkaProperties;
 import com.zanox.vertx.mods.internal.MessageSerializerType;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
 import kafka.javaapi.producer.Producer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.vertx.java.core.eventbus.Message;
-import org.vertx.java.core.json.JsonObject;
-import org.vertx.java.core.logging.Logger;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class KafkaMessageProcessorTest {
@@ -58,7 +57,6 @@ public class KafkaMessageProcessorTest {
 
     @InjectMocks
     private KafkaMessageProcessor kafkaMessageProcessor;
-
 
     @Test
     public void sendMessageToKafka() {

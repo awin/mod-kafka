@@ -1,0 +1,6 @@
+{
+    "main": "com.zanox.vertx.mods.KafkaMessageProcessor",
+    "options": {
+        "worker": true
+    }
+}

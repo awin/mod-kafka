@@ -15,19 +15,22 @@
  */
 package com.zanox.vertx.mods;
 
+import com.google.common.base.Strings;
 import com.timgroup.statsd.NoOpStatsDClient;
 import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.timgroup.statsd.StatsDClient;
 import com.zanox.vertx.mods.handlers.MessageHandler;
 import com.zanox.vertx.mods.internal.MessageSerializerType;
 
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import kafka.common.FailedToSendMessageException;
 import kafka.javaapi.producer.Producer;
-
-import org.vertx.java.busmods.BusModBase;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.eventbus.Message;
-import org.vertx.java.core.json.JsonObject;
 
 import java.util.Properties;
 
@@ -40,7 +43,9 @@ import static com.zanox.vertx.mods.internal.StatsDProperties.*;
  * It subscribes to Vert.x's specific EventBus address to handle messages published by other verticals
  * and sends messages to Kafka Broker.
  */
-public class KafkaMessageProcessor extends BusModBase implements Handler<Message<JsonObject>> {
+public class KafkaMessageProcessor extends AbstractVerticle implements Handler<Message<JsonObject>> {
+
+    private final Logger logger = LoggerFactory.getLogger(KafkaMessageProcessor.class);
 
     private Producer producer;
     private String topic;
@@ -48,7 +53,7 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
 
     private MessageHandlerFactory messageHandlerFactory;
     private KafkaProducerFactory kafkaProducerFactory;
-    
+
     private StatsDClient statsDClient;
 
     public KafkaMessageProcessor() {
@@ -58,20 +63,20 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
 
     @Override
     public void start() {
-        super.start();
-
-        topic = getOptionalStringConfig(KAFKA_TOPIC, DEFAULT_TOPIC);
-        serializerType = MessageSerializerType.getEnum(getOptionalStringConfig(SERIALIZER_CLASS,
-                MessageSerializerType.BYTE_SERIALIZER.toString()));
+        topic = config().getString(KAFKA_TOPIC, DEFAULT_TOPIC);
+        serializerType = MessageSerializerType.getEnum(config().getString(SERIALIZER_CLASS, MessageSerializerType.BYTE_SERIALIZER.toString()));
 
         producer = createProducer();
         
         statsDClient = createStatsDClient();
         
         // Get the address of EventBus where the message was published
-        final String address = getMandatoryStringConfig("address");
+        final String address = config().getString("address");
+        if(Strings.isNullOrEmpty(address)) {
+            throw new IllegalStateException("address must be specified in config");
+        }
 
-        vertx.eventBus().registerHandler(address, this);
+        vertx.eventBus().consumer(address, this);
     }
 
     @Override
@@ -97,8 +102,8 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
     private Producer createProducer() {
         final Properties props = new Properties();
 
-        final String brokerList = getOptionalStringConfig(BROKER_LIST, DEFAULT_BROKER_LIST);
-        final int requestAcks = getOptionalIntConfig(REQUEST_ACKS, DEFAULT_REQUEST_ACKS);
+        final String brokerList = config().getString(BROKER_LIST, DEFAULT_BROKER_LIST);
+        final int requestAcks = config().getInteger(REQUEST_ACKS, DEFAULT_REQUEST_ACKS);
 
         props.put(BROKER_LIST, brokerList);
         props.put(SERIALIZER_CLASS, serializerType.getValue());
@@ -118,12 +123,12 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
      */
     protected StatsDClient createStatsDClient() {
     	
-    	final boolean enabled = getOptionalBooleanConfig(STATSD_ENABLED, DEFAULT_STATSD_ENABLED);
+    	final boolean enabled = config().getBoolean(STATSD_ENABLED, DEFAULT_STATSD_ENABLED);
     	
     	if (enabled) {
-			final String prefix = getOptionalStringConfig(STATSD_PREFIX, DEFAULT_STATSD_PREFIX);
-	    	final String host = getOptionalStringConfig(STATSD_HOST, DEFAULT_STATSD_HOST);
-	    	final int port = getOptionalIntConfig(STATSD_PORT, DEFAULT_STATSD_PORT);
+			final String prefix = config().getString(STATSD_PREFIX, DEFAULT_STATSD_PREFIX);
+	    	final String host = config().getString(STATSD_HOST, DEFAULT_STATSD_HOST);
+	    	final int port = config().getInteger(STATSD_PORT, DEFAULT_STATSD_PORT);
 			return new NonBlockingStatsDClient(prefix, host, port);
 		}
 		else {
@@ -157,7 +162,6 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
             
             statsDClient.recordExecutionTime("submitted", (System.currentTimeMillis()-startTime));
             
-            
             sendOK(event);
             logger.info(String.format("Message sent to kafka topic: %s. Payload: %s", topic, event.body().getString(PAYLOAD)));
         } catch (FailedToSendMessageException ex) {
@@ -175,5 +179,35 @@ public class KafkaMessageProcessor extends BusModBase implements Handler<Message
 
     protected MessageSerializerType getSerializerType() {
         return serializerType;
+    }
+
+    protected void sendOK(Message<JsonObject> message) {
+        sendOK(message, null);
+    }
+
+    protected void sendStatus(String status, Message<JsonObject> message) {
+        sendStatus(status, message, null);
+    }
+
+    protected void sendStatus(String status, Message<JsonObject> message, JsonObject json) {
+        if (json == null) {
+            json = new JsonObject();
+        }
+        json.put("status", status);
+        message.reply(json);
+    }
+
+    protected void sendOK(Message<JsonObject> message, JsonObject json) {
+        sendStatus("ok", message, json);
+    }
+
+    protected void sendError(Message<JsonObject> message, String error) {
+        sendError(message, error, null);
+    }
+
+    protected void sendError(Message<JsonObject> message, String error, Exception e) {
+        logger.error(error, e);
+        JsonObject json = new JsonObject().put("status", "error").put("message", error);
+        message.reply(json);
     }
 }

@@ -17,47 +17,39 @@ package com.zanox.vertx.mods;
 
 import com.zanox.vertx.mods.internal.KafkaProperties;
 import com.zanox.vertx.mods.internal.MessageSerializerType;
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
-import org.vertx.java.core.AsyncResult;
-import org.vertx.java.core.AsyncResultHandler;
-import org.vertx.java.core.json.JsonObject;
-import org.vertx.testtools.TestVerticle;
-import org.vertx.testtools.VertxAssert;
-
-import static org.junit.Assert.assertTrue;
-import static org.vertx.testtools.VertxAssert.assertEquals;
-import static org.vertx.testtools.VertxAssert.testComplete;
+import org.junit.runner.RunWith;
 
 /**
  * Tests mod-kafka module specifying incorrect configuration with missing required parameter.
  * Then verifies that deployment of module fails with a message, that missing parameter should be specified.
  */
-public class KafkaModuleDeployWithIncorrectConfigIT extends TestVerticle {
-
-    @Override
-    public void start() {
-        VertxAssert.initialize(vertx);
-
-        JsonObject config = new JsonObject();
-        // Do not put required config param when deploying the module - config.putString("address", ADDRESS);
-        config.putString("metadata.broker.list", KafkaProperties.DEFAULT_BROKER_LIST);
-        config.putString("kafka-topic", KafkaProperties.DEFAULT_TOPIC);
-        config.putNumber("request.required.acks", KafkaProperties.DEFAULT_REQUEST_ACKS);
-        config.putString("serializer.class", MessageSerializerType.STRING_SERIALIZER.getValue());
-
-        container.deployModule(System.getProperty("vertx.modulename"), config, new AsyncResultHandler<String>() {
-            @Override
-            public void handle(AsyncResult<String> asyncResult) {
-
-                assertTrue(asyncResult.failed());
-                assertEquals("address must be specified in config for busmod", asyncResult.cause().getMessage());
-                testComplete();
-            }
-        });
-    }
+@RunWith(VertxUnitRunner.class)
+public class KafkaModuleDeployWithIncorrectConfigIT extends AbstractVertxTest {
 
     @Test
-    public void sendMessage() throws Exception {
-        // The test should fail to start the deployment
+    // The test should fail to start the deployment
+    public void sendMessage(TestContext testContext) throws Exception {
+
+        JsonObject config = new JsonObject();
+        config.put("metadata.broker.list", KafkaProperties.DEFAULT_BROKER_LIST);
+        config.put("kafka-topic", KafkaProperties.DEFAULT_TOPIC);
+        config.put("request.required.acks", KafkaProperties.DEFAULT_REQUEST_ACKS);
+        config.put("serializer.class", MessageSerializerType.STRING_SERIALIZER.getValue());
+
+        final Async async = testContext.async();
+        final DeploymentOptions deploymentOptions = new DeploymentOptions();
+        deploymentOptions.setConfig(config);
+        vertx.deployVerticle(SERVICE_NAME, deploymentOptions, asyncResult -> {
+            testContext.assertTrue(asyncResult.failed());
+            testContext.assertNotNull("DeploymentID should not be null", asyncResult.result());
+            testContext.assertEquals("address must be specified in config", asyncResult.cause().getMessage());
+            async.complete();
+        });
     }
 }
